@@ -1,13 +1,7 @@
 export const getSpotifyAuthUrl = () => {
-    const clientId = 'a48604bc1afb422e97991538924649bf'; // Replace with your Spotify Client ID
-    const redirectUri = 'https://vintage-vinyl.vercel.app/callback'; // Replace with your Redirect URI
-    const scopes = [
-        'streaming',
-        'user-read-email',
-        'user-read-private',
-        'user-modify-playback-state',
-        'playlist-read-private',
-    ];
+    const clientId = import.meta.env.VITE_SPOTIFY_CLIENT_ID; // Access environment variable
+    const redirectUri = import.meta.env.VITE_SPOTIFY_REDIRECT_URI; // Access environment variable
+    const scopes = import.meta.env.VITE_SPOTIFY_SCOPES.split(' '); // Convert scopes string to an array
 
     return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
         redirectUri
