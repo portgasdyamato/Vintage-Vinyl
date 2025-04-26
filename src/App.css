@@ -2,7 +2,8 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden; /* Prevent horizontal scrolling */
-  background-color: #E8756D; /* Light background for better contrast */
+   /* Light background for better contrast */
+  font-family: Arial, sans-serif;
 }
 
 #root {
@@ -27,4 +28,18 @@ body {
   to {
       transform: rotate(360deg);
   }
+}
+
+.play-button {
+  background-color: #1db954;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.play-button:hover {
+  background-color: #1ed760;
 }
