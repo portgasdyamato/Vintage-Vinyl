@@ -6,6 +6,7 @@ export const getSpotifyAuthUrl = () => {
         'user-read-email',
         'user-read-private',
         'user-modify-playback-state',
+        'playlist-read-private',
     ];
 
     return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(

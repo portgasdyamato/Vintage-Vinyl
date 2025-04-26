@@ -4,11 +4,13 @@ body {
   overflow-x: hidden; /* Prevent horizontal scrolling */
    /* Light background for better contrast */
   font-family: Arial, sans-serif;
+  background-color: #ce9f9f; /* Light grey background */
 }
 
 #root {
   max-width: 100vw; /* Ensure the root container does not exceed the viewport width */
   overflow-x: hidden; /* Prevent horizontal overflow */
+  overflow-y: hidden; /* Prevent horizontal overflow */
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -30,16 +32,23 @@ body {
   }
 }
 
-.play-button {
-  background-color: #1db954;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
+
+.spotify-input {
+  border: 2px solid #f1347f; /* Dark pink border */
+  background-color: rgb(244, 216, 151); /* White background */
+  border-radius: 9999px; /* Fully rounded corners */
+  height: 3rem; /* Height of the input box */
+  padding: 0 1rem; /* Horizontal padding */
+  width: 20rem; /* Width of the input box */
+  font-size: 1rem; /* Font size */
+  outline: none; /* Remove default focus outline */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
+  0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.play-button:hover {
-  background-color: #1ed760;
+.spotify-input:focus {
+  border-color: #f62982; /* Slightly darker pink on focus */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
+  0 4px 6px rgba(0, 0, 0, 0.8);
 }
