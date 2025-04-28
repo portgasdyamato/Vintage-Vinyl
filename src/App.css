@@ -18,14 +18,20 @@ body {
   text-align: center;
 }
 
-.background-video {
+.video-container {
   position: fixed; /* Fix the video to the viewport */
   top: 0;
   left: 0;
   width: 100%; /* Cover the entire width */
   height: 100%; /* Cover the entire height */
-  object-fit: cover; /* Ensure the video covers the viewport without distortion */
   z-index: -1; /* Place the video behind all content */
+  overflow: hidden;
+}
+
+.background-video {
+  width: 100%; /* Cover the entire width */
+  height: 100%; /* Cover the entire height */
+  object-fit: cover; /* Ensure the video covers the viewport without distortion */
 }
 
 @import "tailwindcss";
