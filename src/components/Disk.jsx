@@ -1,23 +1,51 @@
 import disk from '../assets/disk.png';
+import fallbackImage from '../assets/dk.jpeg'; // Import the fallback image
 
-export default function Disk({ isPlaying }) {
+export default function Disk({ isPlaying, videoUrl }) {
+    // Extract YouTube video ID from the URL
+    const getYouTubeThumbnail = (url) => {
+        if (!url) return null; // Handle undefined or empty URL
+        const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
+        return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
+    };
+
+    const thumbnailUrl = getYouTubeThumbnail(videoUrl);
+
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen">
-            <div className="relative">
+        <div className="relative flex flex-col items-center justify-center h-screen top-[-40px] left-20">
+            <div
+                className={`relative ${isPlaying ? 'rotating-disk' : ''}`}
+                style={{
+                    width: '700px',
+                    height: '700px',
+                }}
+            >
+                {/* Disk Image */}
                 <img
-                    className={`${
-                        isPlaying ? 'rotating-disk' : ''
-                    }`}
-                    style={{
-                        width: '700px',
-                        height: '700px',
-                    }}
                     src={disk}
                     alt="Disk"
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '50%',
+                    }}
                 />
-                <div className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold bg-amber-400 rounded-full w-68 h-68 top-54 left-54 rotating-disk ">
-                    hehe
-                </div>
+
+                {/* Fallback or Thumbnail Image */}
+                <div
+                    className="absolute "
+                    style={{
+                        width: '255px', // Adjust size of the thumbnail
+                        height: '250px',
+                        borderRadius: '50%',
+                        backgroundImage: `url(${thumbnailUrl || fallbackImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        top: '49%',
+                        left: '49%',
+                        transform: 'translate(-50%, -50%)', // Center the thumbnail
+                    }}
+                ></div>
             </div>
         </div>
     );

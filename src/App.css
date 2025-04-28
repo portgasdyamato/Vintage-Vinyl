@@ -1,20 +1,33 @@
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-   /* Light background for better contrast */
+  overflow: hidden; /* Prevent scrolling */
   font-family: Arial, sans-serif;
-  background-color: #ce9f9f; /* Light grey background */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
 }
 
 #root {
+  position: relative; /* Ensure content is positioned above the video */
+  z-index: 1; /* Place content above the video */
   max-width: 100vw; /* Ensure the root container does not exceed the viewport width */
   overflow-x: hidden; /* Prevent horizontal overflow */
-  overflow-y: hidden; /* Prevent horizontal overflow */
+  overflow-y: hidden; /* Prevent vertical overflow */
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
 }
+
+.background-video {
+  position: fixed; /* Fix the video to the viewport */
+  top: 0;
+  left: 0;
+  width: 100%; /* Cover the entire width */
+  height: 100%; /* Cover the entire height */
+  object-fit: cover; /* Ensure the video covers the viewport without distortion */
+  z-index: -1; /* Place the video behind all content */
+}
+
 @import "tailwindcss";
 @import "tailwindcss/preflight";
 @tailwind utilities;
@@ -32,23 +45,81 @@ body {
   }
 }
 
-
 .spotify-input {
-  border: 2px solid #f1347f; /* Dark pink border */
-  background-color: rgb(244, 216, 151); /* White background */
+  border: 4px solid #8f4a00; /* Dark pink border */
+  background-color: rgb(255, 255, 255); /* White background */
   border-radius: 9999px; /* Fully rounded corners */
   height: 3rem; /* Height of the input box */
   padding: 0 1rem; /* Horizontal padding */
-  width: 20rem; /* Width of the input box */
+  width: 17rem; /* Width of the input box */
   font-size: 1rem; /* Font size */
   outline: none; /* Remove default focus outline */
   transition: border-color 0.3s ease; /* Smooth transition for border color */
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
-  0 4px 6px rgba(0, 0, 0, 0.1);
+  0 4px 6px rgba(0, 0, 0, 0.6);
 }
 
 .spotify-input:focus {
-  border-color: #f62982; /* Slightly darker pink on focus */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
+  border-color: #874300; /* Slightly darker pink on focus */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5),
   0 4px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* Logo Hover Animation */
+.logo-hover {
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+.logo-hover:hover {
+  animation: float 2s infinite ease-in-out; /* Apply floating animation */
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0); /* Initial position */
+  }
+  50% {
+    transform: translateY(-10px); /* Move up */
+  }
+  100% {
+    transform: translateY(0); /* Return to initial position */
+  }
+}
+.menu-hover {
+  transition: transform 0.3s ease-in-out; /* Smooth transition */
+}
+
+.menu-hover:hover {
+  transform: scale(1.2); /* Increase size by 20% on hover */
+}
+/* Slide-in animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%); /* Start off-screen to the right */
+    opacity: 0; /* Start invisible */
+  }
+  to {
+    transform: translateX(0); /* End at its original position */
+    opacity: 1; /* Fully visible */
+  }
+}
+
+/* Slide-out animation */
+@keyframes slide-out {
+  from {
+    transform: translateX(0); /* Start at its original position */
+    opacity: 1; /* Fully visible */
+  }
+  to {
+    transform: translateX(100%); /* Move off-screen to the right */
+    opacity: 0; /* Fade out */
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.5s ease-out forwards; /* Apply slide-in animation */
+}
+
+.animate-slide-out {
+  animation: slide-out 0.5s ease-in forwards; /* Apply slide-out animation */
 }

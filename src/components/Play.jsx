@@ -1,100 +1,66 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import '../App.css';
 import play from '../assets/play.png';
 import stop from '../assets/stop.png';
 import Disk from './Disk';
 import Tonearm from './Tonearm';
+import ReactPlayer from 'react-player';
+import Repeat from './Repeat';
+import Next from './Next';
+import board from '../assets/board.png'; // Import the board image
+import Back from './Back';
 
 export default function Play() {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [spotifyLink, setSpotifyLink] = useState('');
-    const [player, setPlayer] = useState(null);
+    const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // Track the current video index
+    const [videoQueue, setVideoQueue] = useState([]); // Queue of video URLs
+    const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
+    const [isRepeat, setIsRepeat] = useState(false); // State to track repeat mode
 
-    useEffect(() => {
-        const token = localStorage.getItem('spotifyAccessToken'); // Ensure you have a valid token
-
-        if (!token) {
-            alert('Please log in to Spotify first.');
-            return;
+    const handleClick = () => {
+        if (newVideoLink.trim() !== '') {
+            // Add the current link to the queue if it's not already present
+            if (!videoQueue.includes(newVideoLink)) {
+                setVideoQueue((prevQueue) => [...prevQueue, newVideoLink]);
+            }
+            setNewVideoLink(''); // Clear the input field
         }
+        setIsPlaying(!isPlaying); // Toggle between play and stop
+    };
 
-        // Load the Spotify Web Playback SDK
-        const script = document.createElement('script');
-        script.src = 'https://sdk.scdn.co/spotify-player.js';
-        script.async = true;
-        document.body.appendChild(script);
-
-        window.onSpotifyWebPlaybackSDKReady = () => {
-            const spotifyPlayer = new window.Spotify.Player({
-                name: 'Vinyl Player',
-                getOAuthToken: (cb) => {
-                    cb(token);
-                },
-                volume: 0.5,
-            });
-
-            setPlayer(spotifyPlayer);
-
-            spotifyPlayer.addListener('ready', ({ device_id }) => {
-                console.log('Ready with Device ID', device_id);
-            });
-
-            spotifyPlayer.addListener('not_ready', ({ device_id }) => {
-                console.log('Device ID has gone offline', device_id);
-            });
-
-            spotifyPlayer.connect();
-        };
-    }, []);
-
-    const handleClick = async () => {
-        if (!spotifyLink) {
-            alert('Please enter a valid Spotify link.');
-            return;
-        }
-
-        const token = localStorage.getItem('spotifyAccessToken'); // Ensure you have a valid token
-        if (!token) {
-            alert('Please log in to Spotify first.');
-            return;
-        }
-
-        // Extract the Spotify URI from the link
-        const uri = extractSpotifyUri(spotifyLink);
-        if (!uri) {
-            alert('Invalid Spotify link.');
-            return;
-        }
-
-        // Play the song or playlist
-        if (player) {
-            const deviceId = await player._options.id;
-            await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
-                method: 'PUT',
-                body: JSON.stringify({ uris: [uri] }),
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-            setIsPlaying(true);
+    const handleNextClick = () => {
+        // Move to the next video in the queue
+        if (videoQueue.length > 0) {
+            setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videoQueue.length);
+            setIsPlaying(true); // Automatically play the next video
         }
     };
 
-    const handleInputChange = (e) => {
-        setSpotifyLink(e.target.value); // Update the Spotify link state
+    const handleBackClick = () => {
+        // Move to the previous video in the queue
+        if (videoQueue.length > 0) {
+            setCurrentVideoIndex((prevIndex) =>
+                prevIndex === 0 ? videoQueue.length - 1 : prevIndex - 1
+            );
+            setIsPlaying(true); // Automatically play the previous video
+        }
     };
 
-    const extractSpotifyUri = (link) => {
-        const match = link.match(/(?:https:\/\/open\.spotify\.com\/)(track|playlist)\/([a-zA-Z0-9]+)/);
-        if (match) {
-            return `spotify:${match[1]}:${match[2]}`;
-        }
-        return null;
+    const handleRepeatToggle = () => {
+        setIsRepeat(!isRepeat); // Toggle repeat mode
+    };
+
+    const resetAll = () => {
+        setIsPlaying(false); // Stop playback
+        setCurrentVideoIndex(0); // Reset to the first video
+        setVideoQueue([]); // Clear the queue
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center h-screen">
-            <div className="absolute top-20 left-15">
+        <div className="relative flex flex-col items-center justify-center h-screen top-15">
+            
+            <div><img src={board} alt="" className='absolute top-5 left-7' style={{ width: '25%', height: '85%' }}/></div>
+            <div className="absolute top-20 left-18">
                 <img
                     src={isPlaying ? stop : play} // Toggle image based on state
                     alt={isPlaying ? 'Stop Button' : 'Play Button'}
@@ -102,16 +68,58 @@ export default function Play() {
                     onClick={handleClick}
                 />
             </div>
-            <div className="absolute bottom-30 left-15">
+
+            {/* Input for Adding Videos */}
+            <div className="absolute bottom-35 left-19">
                 <input
                     type="text"
-                    placeholder=" Enter Spotify link"
-                    value={spotifyLink}
-                    onChange={handleInputChange}
-                    className="spotify-input"
+                    placeholder="Enter YouTube link"
+                    value={newVideoLink}
+                    onChange={(e) => setNewVideoLink(e.target.value)}
+                    className="spotify-input mb-2"
                 />
             </div>
-            <Disk isPlaying={isPlaying} />
+
+            {/* Repeat Button */}
+            <div className="absolute top-20 left-58">
+                <Repeat isRepeat={isRepeat} handleRepeatToggle={handleRepeatToggle} />
+            </div>
+
+            {/* Back Button */}
+            <div className="absolute top-60 left-18">
+                <Back handleBackClick={handleBackClick} />
+            </div>
+
+            {/* Next Button */}
+            <div className="absolute top-60 left-58">
+                <Next handleNextClick={handleNextClick} />
+            </div>
+
+            {/* ReactPlayer */}
+            {videoQueue.length > 0 && (
+                <ReactPlayer
+                    url={videoQueue[currentVideoIndex]} // Play the current video
+                    playing={isPlaying}
+                    controls
+                    onEnded={() => {
+                        if (isRepeat) {
+                            setIsPlaying(false); // Stop playback momentarily
+                            setTimeout(() => setIsPlaying(true), 10); // Replay the current song
+                        } else if (currentVideoIndex < videoQueue.length - 1) {
+                            handleNextClick(); // Play the next song
+                        } else {
+                            resetAll(); // Reset everything when the queue ends
+                        }
+                    }}
+                    width="0"
+                    height="0"
+                />
+            )}
+
+            {/* Disk */}
+            <Disk isPlaying={isPlaying} videoUrl={videoQueue[currentVideoIndex] || ''} />
+
+            {/* Tonearm */}
             <Tonearm isPlaying={isPlaying} />
         </div>
     );
