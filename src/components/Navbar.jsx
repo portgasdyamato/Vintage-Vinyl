@@ -1,57 +1,68 @@
 import React, { useState } from 'react';
-import pippofy from '../assets/pippofy.png'; // Import the logo image
-import menu from '../assets/menu.png'; // Import the menu image
-import Queue from './Queue'; // Import the Queue component
+import pippofy from '../assets/pippofy.png';
+import menu from '../assets/menu.png';
+import AnimatedList from './Queue';
+import Play from './Play'; // Import Play component
 
 export default function Navbar() {
-    const [isQueueOpen, setIsQueueOpen] = useState(false); // State to toggle Queue visibility
-    const [isQueueVisible, setIsQueueVisible] = useState(false); // State to control animation
+  const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const [queue, setQueue] = useState([]); // Move queue state to Navbar
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // Track the current video index
 
-    const toggleQueue = () => {
-        if (isQueueOpen) {
-            // If the queue is open, start the slide-out animation
-            setIsQueueOpen(false);
-            setTimeout(() => setIsQueueVisible(false), 500); // Wait for the animation to finish
-        } else {
-            // If the queue is closed, make it visible and start the slide-in animation
-            setIsQueueVisible(true);
-            setTimeout(() => setIsQueueOpen(true), 0);
-        }
-    };
+  const toggleQueue = () => {
+    setIsQueueOpen(!isQueueOpen); // Toggle the Queue visibility
+  };
 
-    return (
-        <>
-            <nav className="fixed top-0 left-0 w-full h-15 z-10">
-                <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-                    {/* Logo */}
-                    <div className="font-bold flex items-center logo-hover">
-                        <img
-                            src={pippofy}
-                            alt="Pippofy Logo"
-                            className="h-14 w-25 mr-2"
-                            style={{ marginLeft: '25px', marginTop: '5px' }}
-                        />
-                        <span className="text-pink-700 text-xl font-serif">Pippofy</span>
-                    </div>
+  const addVideoToQueue = (video) => {
+    setQueue((prevQueue) => [...prevQueue, video]); // Add a new video to the queue
+  };
 
-                    {/* Menu */}
-                    <div className="flex space-x-6" style={{ marginRight: '40px' }}>
-                        <img
-                            src={menu}
-                            alt="Menu"
-                            className="h-14 w-18 menu-hover cursor-pointer"
-                            onClick={toggleQueue} // Toggle Queue on click
-                        />
-                    </div>
-                </div>
-            </nav>
+  const handleItemSelect = (item, index) => {
+    setCurrentVideoIndex(index); // Set the selected video as the current video
+  };
 
-            {/* Queue Component */}
-            {isQueueVisible && (
-                <div className="fixed top-16 right-0 w-1/3 h-full z-20">
-                    <Queue isVisible={isQueueOpen} />
-                </div>
-            )}
-        </>
-    );
+  return (
+    <>
+      <nav className="fixed top-0 left-0 w-full h-15 z-10">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="font-bold flex items-center logo-hover">
+            <img
+              src={pippofy}
+              alt="Pippofy Logo"
+              className="h-14 w-28 mr-2"
+            />
+            <span className="text-white text-xl font-serif">Pippofy</span>
+          </div>
+          <div className="flex space-x-6">
+            <img
+              src={menu}
+              alt="Menu"
+              className="h-14 w-18 cursor-pointer"
+              onClick={toggleQueue} // Toggle queue visibility
+            />
+          </div>
+        </div>
+      </nav>
+
+      {isQueueOpen && (
+        <div className="fixed top-20 right-[-50px] w-1/3 h-full z-20">
+          <AnimatedList
+            items={queue} // Pass the queue dynamically
+            onItemSelect={(item, index) => {
+              console.log(`Selected: ${item.title} at index ${index}`);
+              handleItemSelect(item, index); // Handle item selection
+            }}
+          />
+        </div>
+      )}
+
+      {/* Pass queue, addVideoToQueue, and currentVideoIndex to Play */}
+      <Play
+        queue={queue}
+        addVideoToQueue={addVideoToQueue}
+        currentVideoIndex={currentVideoIndex}
+        setCurrentVideoIndex={setCurrentVideoIndex}
+      />
+    </>
+  );
 }
