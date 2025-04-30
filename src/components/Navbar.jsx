@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import pippofy from '../assets/pippofy.png';
 import menu from '../assets/menu.png';
+import Play from './Play';
 import AnimatedList from './Queue';
-import Play from './Play'; // Import Play component
 
 export default function Navbar() {
   const [isQueueOpen, setIsQueueOpen] = useState(false);
-  const [queue, setQueue] = useState([]); // Move queue state to Navbar
+  const [queue, setQueue] = useState([]); // State for the queue
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // Track the current video index
+  const [isPlaying, setIsPlaying] = useState(false); // Track playback state
 
   const toggleQueue = () => {
     setIsQueueOpen(!isQueueOpen); // Toggle the Queue visibility
@@ -17,8 +18,20 @@ export default function Navbar() {
     setQueue((prevQueue) => [...prevQueue, video]); // Add a new video to the queue
   };
 
-  const handleItemSelect = (item, index) => {
+  const handleItemSelect = (index) => {
     setCurrentVideoIndex(index); // Set the selected video as the current video
+    setIsPlaying(true); // Start playback
+  };
+
+  const handleRemove = (index) => {
+    const updatedQueue = queue.filter((_, i) => i !== index); // Remove the item at the given index
+    setQueue(updatedQueue); // Update the queue state
+
+    // If the removed item is the currently playing video, reset playback
+    if (index === currentVideoIndex) {
+      setCurrentVideoIndex(0); // Reset to the first video
+      setIsPlaying(false); // Stop playback
+    }
   };
 
   return (
@@ -37,7 +50,7 @@ export default function Navbar() {
             <img
               src={menu}
               alt="Menu"
-              className="h-14 w-18 cursor-pointer"
+              className="h-14 w-18 transition-transform duration-150 active:scale-75 cursor-pointer"
               onClick={toggleQueue} // Toggle queue visibility
             />
           </div>
@@ -48,20 +61,20 @@ export default function Navbar() {
         <div className="fixed top-20 right-[-50px] w-1/3 h-full z-20">
           <AnimatedList
             items={queue} // Pass the queue dynamically
-            onItemSelect={(item, index) => {
-              console.log(`Selected: ${item.title} at index ${index}`);
-              handleItemSelect(item, index); // Handle item selection
-            }}
+            onItemSelect={handleItemSelect} // Pass the item selection handler
+            handleRemove={handleRemove} // Pass the handleRemove function
           />
         </div>
       )}
 
-      {/* Pass queue, addVideoToQueue, and currentVideoIndex to Play */}
       <Play
         queue={queue}
         addVideoToQueue={addVideoToQueue}
         currentVideoIndex={currentVideoIndex}
         setCurrentVideoIndex={setCurrentVideoIndex}
+        setQueue={setQueue}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
       />
     </>
   );

@@ -10,12 +10,15 @@ import Next from './Next';
 import board from '../assets/board.png'; // Import the board image
 import Back from './Back';
 import InputBox from './InputBox';
+import Clear from './Clear';
+import Add from './Add';
 
 export default function Play({
   queue = [],
   addVideoToQueue,
   currentVideoIndex,
   setCurrentVideoIndex,
+  setQueue, // Add setQueue as a prop to modify the queue
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
@@ -49,49 +52,23 @@ export default function Play({
     return 'Unknown Title'; // Fallback title
   };
 
-  const handleAddVideo = async () => {
+  const handleAddVideo = () => {
     if (newVideoLink.trim() !== '') {
-      const videoId = extractVideoId(newVideoLink);
-      if (videoId) {
-        const title = await fetchVideoTitle(videoId);
-        // Add the video with its title to the queue
-        addVideoToQueue({ url: newVideoLink, title });
-        setNewVideoLink(''); // Clear the input field
-      } else {
-        alert('Invalid YouTube URL');
-      }
+      addVideoToQueue({ url: newVideoLink, title: 'New Video' }); // Add the video to the queue
+      setNewVideoLink(''); // Clear the input field
+    } else {
+      alert('Please enter a valid YouTube link.');
     }
   };
 
-  const handleNextClick = () => {
-    // Move to the next video in the queue
-    if (queue.length > 0) {
-      setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % queue.length);
-      setIsPlaying(true); // Automatically play the next video
-    }
-  };
-
-  const handleBackClick = () => {
-    // Move to the previous video in the queue
-    if (queue.length > 0) {
-      setCurrentVideoIndex((prevIndex) =>
-        prevIndex === 0 ? queue.length - 1 : prevIndex - 1
-      );
-      setIsPlaying(true); // Automatically play the previous video
-    }
-  };
-
-  const handleRepeatToggle = () => {
-    setIsRepeat(!isRepeat); // Toggle repeat mode
-  };
-
-  const resetAll = () => {
+  const handleClearQueue = () => {
+    setQueue([]); // Clear the queue
     setIsPlaying(false); // Stop playback
-    setCurrentVideoIndex(0); // Reset to the first video
+    setCurrentVideoIndex(0); // Reset the current video index
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-screen top-15">
+    <div className="relative flex flex-col items-center justify-center h-screen top-13">
       <div>
         <img
           src={board}
@@ -101,12 +78,22 @@ export default function Play({
         />
       </div>
       <div className="absolute top-20 left-18">
-        <img
-          src={isPlaying ? stop : play} // Toggle image based on state
-          alt={isPlaying ? 'Stop Button' : 'Play Button'}
-          className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
-          onClick={() => {setIsPlaying(!isPlaying); handleAddVideo();}} // Toggle play/pause on click
-        />
+      <img
+    src={isPlaying ? stop : play} // Toggle image based on state
+    alt={isPlaying ? 'Stop Button' : 'Play Button'}
+    className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
+    onClick={() => {
+      if (queue.length === 0 && newVideoLink.trim() === '') {
+        alert('Please enter a valid YouTube link.'); // Show alert if no song in queue and no link in input box
+      } else if (queue.length === 0 && newVideoLink.trim() !== '') {
+        setIsPlaying(!isPlaying)
+        handleAddVideo(); // Add the video to the queue if a link is provided
+      } else {
+        setIsPlaying(!isPlaying);
+        handleAddVideo(); // Toggle play/pause
+      }
+    }}
+  />
       </div>
 
       {/* Input for Adding Videos */}
@@ -118,18 +105,27 @@ export default function Play({
         />
       </div>
       <div className="absolute top-20 left-58">
-        <Repeat isRepeat={isRepeat} handleRepeatToggle={handleRepeatToggle} />
+        <Repeat isRepeat={isRepeat} handleRepeatToggle={() => setIsRepeat(!isRepeat)} />
       </div>
 
       {/* Back Button */}
       <div className="absolute top-60 left-18">
-        <Back handleBackClick={handleBackClick} />
+        <Back handleBackClick={() => setCurrentVideoIndex((prev) => (prev === 0 ? queue.length - 1 : prev - 1))} />
       </div>
 
       {/* Next Button */}
       <div className="absolute top-60 left-58">
-        <Next handleNextClick={handleNextClick} />
+        <Next handleNextClick={() => setCurrentVideoIndex((prev) => (prev + 1) % queue.length)} />
       </div>
+
+      {/* Clear Button */}
+      <div className="absolute top-100 left-58">
+        <Clear handleClearQueue={handleClearQueue} />
+      </div>
+      <div className="absolute top-100 left-19">
+        <Add handleAddVideo={handleAddVideo} /> {/* Pass the add video handler */}
+      </div>
+
       {/* ReactPlayer */}
       {queue.length > 0 && (
         <ReactPlayer
@@ -141,10 +137,10 @@ export default function Play({
               setIsPlaying(false); // Stop playback momentarily
               setTimeout(() => setIsPlaying(true), 10); // Replay the current song
             } else if (currentVideoIndex < queue.length - 1) {
-              handleNextClick(); // Play the next song
+              setCurrentVideoIndex((prev) => prev + 1); // Play the next song
             } else {
               setIsPlaying(false); // Stop playback when the last song ends
-              resetAll(); // Reset everything
+              setCurrentVideoIndex(0); // Reset to the first video
             }
           }}
           width="0"

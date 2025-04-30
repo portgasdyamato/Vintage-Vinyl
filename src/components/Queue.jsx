@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import rem from '../assets/rem.png'; 
+import Remove from './Remove';
 
 const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => {
   const ref = useRef(null);
@@ -21,8 +23,9 @@ const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => 
 };
 
 const AnimatedList = ({
-  items = [], // Pass the list of YouTube videos dynamically
+  items = [],
   onItemSelect,
+  handleRemove, // Add handleRemove as a prop
   className = '',
   itemClassName = '',
 }) => {
@@ -32,19 +35,23 @@ const AnimatedList = ({
         {items.map((item, index) => (
           <AnimatedItem
             key={index}
-            delay={0.1 * index}
             index={index}
-            onClick={() => {
-              if (onItemSelect) {
-                onItemSelect(item, index);
-              }
-            }}
+            onClick={() => onItemSelect(index)} // Start playback when the item is clicked
           >
             <div
-              className={`p-4 bg-[#111] rounded-lg hover:bg-[#222] ${itemClassName}`}
-              style={{ marginBottom: '10px' , padding: '8px' , width: '80%' }} // Explicitly add margin-bottom
+              className={`flex items-center justify-between p-4 bg-[#111] rounded-lg hover:bg-[#222] ${itemClassName}`}
+              style={{ marginBottom: '10px', padding: '8px', width: '80%' }}
             >
-              <p className="text-white m-0">{item.title}</p> {/* Display video title */}
+              {/* Title */}
+              <p className="text-white text-center flex-1 m-0">{item.title}</p>
+
+              {/* Remove Button */}
+              <Remove
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent triggering the parent onClick
+                  handleRemove(index); // Call handleRemove with the index
+                }}
+              />
             </div>
           </AnimatedItem>
         ))}
