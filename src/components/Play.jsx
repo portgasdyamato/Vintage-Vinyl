@@ -28,7 +28,7 @@ export default function Play({
     if (queue.length > 0) {
       setIsPlaying(true); // Start playing when a new video is selected
     }
-  }, [currentVideoIndex]);
+  }, [queue, setIsPlaying, currentVideoIndex]);
 
   const extractVideoId = (url) => {
     const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/.*v=|youtu\.be\/)([^&\s]+)/;
@@ -54,10 +54,12 @@ export default function Play({
 
   const handleAddVideo = () => {
     if (newVideoLink.trim() !== '') {
-      addVideoToQueue({ url: newVideoLink, title: 'New Video' }); // Add the video to the queue
+      const songNumber = queue.length + 1; // Generate the song number based on the queue length
+      const title = `Song ${songNumber}`; // Create the title dynamically
+      addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue with the dynamic title
       setNewVideoLink(''); // Clear the input field
     } else {
-      alert('Please enter a valid YouTube link.');
+       // Show alert if the input box is empty
     }
   };
 
@@ -83,14 +85,17 @@ export default function Play({
     alt={isPlaying ? 'Stop Button' : 'Play Button'}
     className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
     onClick={() => {
-      if (queue.length === 0 && newVideoLink.trim() === '') {
-        alert('Please enter a valid YouTube link.'); // Show alert if no song in queue and no link in input box
-      } else if (queue.length === 0 && newVideoLink.trim() !== '') {
-        setIsPlaying(!isPlaying)
-        handleAddVideo(); // Add the video to the queue if a link is provided
+      if (newVideoLink.trim() !== '') {
+        const songNumber = queue.length + 1; // Generate the song number based on the queue length
+        const title = `Song ${songNumber}`; // Create the title dynamically
+        addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
+        setCurrentVideoIndex(queue.length); // Set the new video as the current video
+        setNewVideoLink(''); // Clear the input field
+        setIsPlaying(true); // Start playback
+      } else if (queue.length > 0) {
+        setIsPlaying(!isPlaying); // Toggle play/pause if the queue is not empty
       } else {
-        setIsPlaying(!isPlaying);
-        handleAddVideo(); // Toggle play/pause
+         // Show alert if no song in queue and no link in input box
       }
     }}
   />

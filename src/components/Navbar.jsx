@@ -28,9 +28,12 @@ export default function Navbar() {
     setQueue(updatedQueue); // Update the queue state
 
     // If the removed item is the currently playing video, reset playback
-    if (index === currentVideoIndex) {
-      setCurrentVideoIndex(0); // Reset to the first video
+    if (updatedQueue.length === 0) {
       setIsPlaying(false); // Stop playback
+      setCurrentVideoIndex(0); // Reset the current video index
+    } else if (index === currentVideoIndex) {
+      // If the removed item is the currently playing video, reset to the first video
+      setCurrentVideoIndex(0);
     }
   };
 
