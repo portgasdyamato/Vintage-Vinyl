@@ -5,7 +5,8 @@ export default function Disk({ isPlaying, videoUrl }) {
     // Extract YouTube video ID from the URL
     const getYouTubeThumbnail = (url) => {
         if (!url) return null; // Handle undefined or empty URL
-        const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
+        const match = url.match(/(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/) ||
+                      url.match(/(?:https?:\/\/)?(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]+)/); // Support shortened URLs
         return match ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg` : null;
     };
 
@@ -31,14 +32,14 @@ export default function Disk({ isPlaying, videoUrl }) {
                     }}
                 />
 
-                {/* Fallback or Thumbnail Image */}
+                {/* Video Thumbnail or Fallback Image */}
                 <div
-                    className="absolute "
+                    className="absolute"
                     style={{
                         width: '255px', // Adjust size of the thumbnail
                         height: '250px',
                         borderRadius: '50%',
-                        backgroundImage: `url(${thumbnailUrl || fallbackImage})`,
+                        backgroundImage: `url(${thumbnailUrl || fallbackImage})`, // Use thumbnail or fallback
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         top: '49%',

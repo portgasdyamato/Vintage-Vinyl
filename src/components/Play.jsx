@@ -36,8 +36,14 @@ export default function Play({
     return match ? match[1] : null;
   };
 
+  const extractPlaylistId = (url) => {
+    const regex = /[?&]list=([^&]+)/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
   const fetchVideoTitle = async (videoId) => {
-    const apiKey = 'YOUR_YOUTUBE_API_KEY'; // Replace with your YouTube Data API key
+    const apiKey = 'AIzaSyBepNVCKYHPahyaSSTpz-lPFo_n2khb5v8'; // Replace with your YouTube Data API key
     const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
 
     try {
@@ -52,14 +58,66 @@ export default function Play({
     return 'Unknown Title'; // Fallback title
   };
 
-  const handleAddVideo = () => {
+  const fetchPlaylistVideos = async (playlistId) => {
+    const apiKey = 'AIzaSyBepNVCKYHPahyaSSTpz-lPFo_n2khb5v8'; // Replace with your YouTube Data API key
+    const apiUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&key=${apiKey}`;
+
+    let allVideos = [];
+    let nextPageToken = '';
+
+    try {
+      do {
+        const response = await fetch(`${apiUrl}&pageToken=${nextPageToken}`);
+        const data = await response.json();
+
+        if (data.items && data.items.length > 0) {
+          const videos = data.items.map((item) => ({
+            videoId: item.snippet.resourceId.videoId,
+            title: item.snippet.title,
+          }));
+          allVideos = [...allVideos, ...videos];
+        }
+
+        nextPageToken = data.nextPageToken || ''; // Update the nextPageToken
+      } while (nextPageToken); // Continue fetching if there is a nextPageToken
+    } catch (error) {
+      console.error('Error fetching playlist videos:', error);
+    }
+
+    return allVideos;
+  };
+
+  const handleAddVideo = async () => {
     if (newVideoLink.trim() !== '') {
-      const songNumber = queue.length + 1; // Generate the song number based on the queue length
-      const title = `Song ${songNumber}`; // Create the title dynamically
-      addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue with the dynamic title
+      const isPlaylist = newVideoLink.includes('list='); // Check if the link is a playlist
+      if (isPlaylist) {
+        const playlistId = extractPlaylistId(newVideoLink); // Extract the playlist ID
+        if (playlistId) {
+          const videos = await fetchPlaylistVideos(playlistId); // Fetch videos from the playlist
+          if (videos.length > 0) {
+            const updatedQueue = videos.map((video) => ({
+              url: `https://www.youtube.com/watch?v=${video.videoId}`,
+              title: video.title, // Use the actual title of the video
+            }));
+            setQueue((prevQueue) => [...prevQueue, ...updatedQueue]); // Add all videos to the queue
+          } else {
+            alert('No videos found in the playlist.');
+          }
+        } else {
+          alert('Invalid playlist link.');
+        }
+      } else {
+        const videoId = extractVideoId(newVideoLink); // Extract the video ID
+        if (videoId) {
+          const title = await fetchVideoTitle(videoId); // Fetch the video title
+          addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
+        } else {
+          alert('Invalid video link.');
+        }
+      }
       setNewVideoLink(''); // Clear the input field
     } else {
-       // Show alert if the input box is empty
+      alert('Please enter a valid YouTube link.'); // Show alert if the input box is empty
     }
   };
 
@@ -120,7 +178,13 @@ export default function Play({
 
       {/* Next Button */}
       <div className="absolute top-60 left-58">
-        <Next handleNextClick={() => setCurrentVideoIndex((prev) => (prev + 1) % queue.length)} />
+      <Next
+  handleNextClick={() => {
+    if (queue.length > 0) {
+      setCurrentVideoIndex((prev) => (prev + 1) % queue.length); // Move to the next song
+    }
+  }}
+/>
       </div>
 
       {/* Clear Button */}
