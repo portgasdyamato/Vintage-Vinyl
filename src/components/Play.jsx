@@ -138,25 +138,50 @@ export default function Play({
         />
       </div>
       <div className="absolute top-20 left-18">
-      <img
-    src={isPlaying ? stop : play} // Toggle image based on state
-    alt={isPlaying ? 'Stop Button' : 'Play Button'}
-    className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
-    onClick={() => {
-      if (newVideoLink.trim() !== '') {
-        const songNumber = queue.length + 1; // Generate the song number based on the queue length
-        const title = `Song ${songNumber}`; // Create the title dynamically
-        addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
-        setCurrentVideoIndex(queue.length); // Set the new video as the current video
-        setNewVideoLink(''); // Clear the input field
-        setIsPlaying(true); // Start playback
-      } else if (queue.length > 0) {
-        setIsPlaying(!isPlaying); // Toggle play/pause if the queue is not empty
-      } else {
-         // Show alert if no song in queue and no link in input box
-      }
-    }}
-  />
+        <img
+          src={isPlaying ? stop : play} // Toggle image based on state
+          alt={isPlaying ? 'Stop Button' : 'Play Button'}
+          className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
+          onClick={async () => {
+            if (newVideoLink.trim() !== '') {
+              const isPlaylist = newVideoLink.includes('list='); // Check if the link is a playlist
+              if (isPlaylist) {
+                const playlistId = extractPlaylistId(newVideoLink); // Extract the playlist ID
+                if (playlistId) {
+                  const videos = await fetchPlaylistVideos(playlistId); // Fetch videos from the playlist
+                  if (videos.length > 0) {
+                    const updatedQueue = videos.map((video) => ({
+                      url: `https://www.youtube.com/watch?v=${video.videoId}`,
+                      title: video.title, // Use the actual title of the video
+                    }));
+                    setQueue((prevQueue) => [...prevQueue, ...updatedQueue]); // Add all videos to the queue
+                    setCurrentVideoIndex(queue.length); // Set the first video of the playlist as the current video
+                    setIsPlaying(true); // Start playback
+                  } else {
+                    alert('No videos found in the playlist.');
+                  }
+                } else {
+                  alert('Invalid playlist link.');
+                }
+              } else {
+                const videoId = extractVideoId(newVideoLink); // Extract the video ID
+                if (videoId) {
+                  const title = await fetchVideoTitle(videoId); // Fetch the video title
+                  addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
+                  setCurrentVideoIndex(queue.length); // Set the new video as the current video
+                  setIsPlaying(true); // Start playback
+                } else {
+                  alert('Invalid video link.');
+                }
+              }
+              setNewVideoLink(''); // Clear the input field
+            } else if (queue.length > 0) {
+              setIsPlaying(!isPlaying); // Toggle play/pause if the queue is not empty
+            } else {
+              alert('Please enter a valid YouTube link or add videos to the queue.'); // Show alert if no song in queue and no link in input box
+            }
+          }}
+        />
       </div>
 
       {/* Input for Adding Videos */}
@@ -178,13 +203,13 @@ export default function Play({
 
       {/* Next Button */}
       <div className="absolute top-60 left-58">
-      <Next
-  handleNextClick={() => {
-    if (queue.length > 0) {
-      setCurrentVideoIndex((prev) => (prev + 1) % queue.length); // Move to the next song
-    }
-  }}
-/>
+        <Next
+          handleNextClick={() => {
+            if (queue.length > 0) {
+              setCurrentVideoIndex((prev) => (prev + 1) % queue.length); // Move to the next song
+            }
+          }}
+        />
       </div>
 
       {/* Clear Button */}
