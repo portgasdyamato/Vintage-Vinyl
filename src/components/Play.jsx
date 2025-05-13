@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../App.css';
 import play from '../assets/play.png';
 import stop from '../assets/stop.png';
-import Disk from './Disk';
+import disk from '../assets/disk.png';
+import fallbackImage from '../assets/dk.jpeg';
 import Tonearm from './Tonearm';
 import ReactPlayer from 'react-player';
 import Repeat from './Repeat';
@@ -12,6 +13,7 @@ import Back from './Back';
 import InputBox from './InputBox';
 import Clear from './Clear';
 import Add from './Add';
+import Disk from './Disk';
 
 export default function Play({
   queue = [],
@@ -23,6 +25,8 @@ export default function Play({
   const [isPlaying, setIsPlaying] = useState(false);
   const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
   const [isRepeat, setIsRepeat] = useState(false); // State to track repeat mode
+  const [played, setPlayed] = useState(0); // Track the progress of the song
+  const playerRef = useRef(null);
 
   useEffect(() => {
     if (queue.length > 0) {
@@ -110,7 +114,7 @@ export default function Play({
         const videoId = extractVideoId(newVideoLink); // Extract the video ID
         if (videoId) {
           const title = await fetchVideoTitle(videoId); // Fetch the video title
-          addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
+          setQueue((prevQueue) => [...prevQueue, { url: newVideoLink, title }]); // Add the video to the queue
         } else {
           alert('Invalid video link.');
         }
@@ -118,13 +122,17 @@ export default function Play({
       setNewVideoLink(''); // Clear the input field
     } else {
       alert('Please enter a valid YouTube link.'); // Show alert if the input box is empty
-    }
-  };
+    }}
 
   const handleClearQueue = () => {
     setQueue([]); // Clear the queue
     setIsPlaying(false); // Stop playback
     setCurrentVideoIndex(0); // Reset the current video index
+  };
+
+  const handleSeek = (progress) => {
+    setPlayed(progress);
+    playerRef.current.seekTo(progress); // Seek to the new progress
   };
 
   return (
@@ -220,11 +228,21 @@ export default function Play({
         <Add handleAddVideo={handleAddVideo} /> {/* Pass the add video handler */}
       </div>
 
+      {/* Disk */}
+      <Disk
+        isPlaying={isPlaying}
+        videoUrl={queue[currentVideoIndex]?.url || ''}
+        onSeek={handleSeek} // Pass the seek handler
+        played={played} // Pass the current progress
+      />
+
       {/* ReactPlayer */}
       {queue.length > 0 && (
         <ReactPlayer
+          ref={playerRef}
           url={queue[currentVideoIndex]?.url} // Play the current video
           playing={isPlaying}
+          onProgress={({ played }) => setPlayed(played)} // Update progress
           controls
           onEnded={() => {
             if (isRepeat) {
@@ -241,9 +259,6 @@ export default function Play({
           height="0"
         />
       )}
-
-      {/* Disk */}
-      <Disk isPlaying={isPlaying} videoUrl={queue[currentVideoIndex]?.url || ''} />
 
       {/* Tonearm */}
       <Tonearm isPlaying={isPlaying} />

@@ -129,3 +129,7 @@ body {
 .animate-slide-out {
   animation: slide-out 0.5s ease-in forwards; /* Apply slide-out animation */
 }
+/* Smooth rotation for the disk */
+.smooth-rotation {
+  transition: transform 0.5s linear; /* Smooth rotation with a 0.5s transition */
+}
