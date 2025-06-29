@@ -1,12 +1,56 @@
-# React + Vite
+# 🎵 Vintage Vinyl
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> “Not just a player, a whole mood — Vintage Vinyl.”
 
-Currently, two official plugins are available:
+Bringing vinyl vibes to the web.  
+A cozy, ad-free music player that spins like the good old days.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+[🌐 Check it out](https://lnkd.in/gENX7_DY)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🪩 What is Vintage Vinyl?
+
+Vintage Vinyl is a handcrafted ReactJS web app that reimagines digital music playback with the timeless charm of a record player.  
+Inspired by retro aesthetics and built with a love for design, it’s more than just a music player — it’s a digital vinyl sanctuary.
+
+---
+
+## ✨ Features
+
+- 🌀 **Spinning Record UI** — Feel the motion of vintage vinyl
+- 🧼 **Clean Retro Aesthetic** — Soft tones, warm minimalism
+- 📺 **Ad-Free Playback via YouTube** — No interruptions
+- 🎶 **Supports Playlists + Single Tracks** — Your music, your way
+- 📜 **Queue List** — Know what’s coming up next
+- ⚡ **Lightweight & Responsive** — Fast and fluid experience
+- 🎛️ **Minimal Controls** — Stay focused on the music
+
+---
+
+## 🛠️ Tech Stack
+
+| Tech       | Purpose                  |
+|------------|--------------------------|
+| ReactJS    | UI Framework             |
+| Vite       | Lightning-fast bundler   |
+| CSS        | Styling                  |
+| YouTube API| Music playback           |
+| Vercel     | Hosting & Deployment     |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js >= 14
+- npm or yarn
+
+### Installation
+
+```bash
+git clone https://github.com/portgasdyamato/Vintage-Vinyl.git
+cd Vintage-Vinyl
+npm install
+npm run dev
