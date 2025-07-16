@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import pippofy from '../assets/pippofy.png';
 import menu from '../assets/menu.png';
 import Play from './Play';
@@ -6,9 +6,23 @@ import AnimatedList from './Queue';
 
 export default function Navbar() {
   const [isQueueOpen, setIsQueueOpen] = useState(false);
+  const listRef = useRef(null);
+  const [isMenuClicked, setIsMenuClicked] = useState(false);
   const [queue, setQueue] = useState([]); // State for the queue
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // Track the current video index
   const [isPlaying, setIsPlaying] = useState(false); // Track playback state
+  const [played, setPlayed] = useState(0); // Track the progress of the song (0 to 1)
+
+  useEffect(() => {
+    if (!isQueueOpen) return;
+    function handleClickOutside(event) {
+      if (listRef.current && !listRef.current.contains(event.target)) {
+        setIsQueueOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isQueueOpen]);
 
   const toggleQueue = () => {
     setIsQueueOpen(!isQueueOpen); // Toggle the Queue visibility
@@ -50,22 +64,30 @@ export default function Navbar() {
             <span className="text-white text-xl font-serif">Pippofy</span>
           </div>
           <div className="flex space-x-6">
-            <img
-              src={menu}
-              alt="Menu"
-              className="h-14 w-18 transition-transform duration-150 active:scale-75 cursor-pointer"
-              onClick={toggleQueue} // Toggle queue visibility
-            />
+            <button
+              onClick={() => {
+                setIsMenuClicked(true);
+                setTimeout(() => setIsMenuClicked(false), 150);
+                setIsQueueOpen((prev) => !prev);
+              }}
+              className={`bg-[#b88c5a] p-2 rounded-full mr-16 transition-all duration-150 flex items-center justify-center ${isMenuClicked ? 'scale-80' : ''}`}
+              style={{ width: '75px', height: '75px' }}
+              aria-label="Toggle song list menu"
+            >
+               <img src={menu} alt="Menu" className="w-26 h-26 object-contain" />
+            </button>
           </div>
         </div>
       </nav>
 
       {isQueueOpen && (
-        <div className="fixed top-20 right-[-50px] w-1/3 h-full z-20">
+        <div ref={listRef}>
           <AnimatedList
-            items={queue} // Pass the queue dynamically
-            onItemSelect={handleItemSelect} // Pass the item selection handler
-            handleRemove={handleRemove} // Pass the handleRemove function
+            items={queue}
+            onItemSelect={handleItemSelect}
+            handleRemove={handleRemove}
+            currentVideoIndex={currentVideoIndex}
+            progress={played}
           />
         </div>
       )}
@@ -78,6 +100,8 @@ export default function Navbar() {
         setQueue={setQueue}
         isPlaying={isPlaying}
         setIsPlaying={setIsPlaying}
+        played={played}
+        setPlayed={setPlayed}
       />
     </>
   );

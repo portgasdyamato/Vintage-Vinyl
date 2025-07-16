@@ -20,12 +20,13 @@ export default function Play({
   addVideoToQueue,
   currentVideoIndex,
   setCurrentVideoIndex,
-  setQueue, // Add setQueue as a prop to modify the queue
+  setQueue,
+  played,
+  setPlayed,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
   const [isRepeat, setIsRepeat] = useState(false); // State to track repeat mode
-  const [played, setPlayed] = useState(0); // Track the progress of the song
   const playerRef = useRef(null);
 
   useEffect(() => {

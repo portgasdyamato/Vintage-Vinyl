@@ -133,3 +133,11 @@ body {
 .smooth-rotation {
   transition: transform 0.5s linear; /* Smooth rotation with a 0.5s transition */
 }
+/* Add to your global CSS */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Webkit */
+}
