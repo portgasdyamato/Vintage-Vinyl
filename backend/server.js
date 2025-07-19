@@ -15,8 +15,8 @@ app.get('/download', (req, res) => {
   }
   res.setHeader('Content-Disposition', 'attachment; filename="audio.mp3"');
   // Use the full path to yt-dlp.exe and ffmpeg.exe
-  const ytdlpPath = 'C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.yt-dlp_Microsoft.Winget.Source_8wekyb3d8bbwe/yt-dlp.exe';
-  const ffmpegPath = 'C:/ffmpeg/bin/ffmpeg.exe'; // <-- update if your path is different
+  const ytdlpPath = 'yt-dlp'; // Use the Linux binary in PATH
+  const ffmpegPath = 'ffmpeg'; // Use the Linux binary in PATH
 
   console.log('Spawning yt-dlp with:', ytdlpPath, ffmpegPath, url);
   const ytdlp = spawn(ytdlpPath, [

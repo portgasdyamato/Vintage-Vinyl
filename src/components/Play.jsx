@@ -29,6 +29,7 @@ export default function Play({
   const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
   const [isRepeat, setIsRepeat] = useState(false); // State to track repeat mode
   const playerRef = useRef(null);
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (queue.length > 0) {
@@ -221,7 +222,7 @@ export default function Play({
             <button className="flex items-center justify-center w-25 h-20 rounded-full bg-transparent p-0 focus:outline-none" style={{ marginLeft: '-11px' }} onClick={() => {
               const url = queue[currentVideoIndex]?.url;
               if (url) {
-                window.open(`https://vintage-vinyl-production.up.railway.app/download?url=${encodeURIComponent(url)}`, '_blank');
+                window.open(`${BACKEND_URL}/download?url=${encodeURIComponent(url)}`, '_blank');
               } else {
                 alert('No song is currently playing.');
               }
