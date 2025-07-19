@@ -127,7 +127,7 @@ const AnimatedList = ({
                         width: '13px',
                         borderTopLeftRadius: '16px',
                         borderBottomLeftRadius: '16px',
-                        background: '#c56363', // fuchsia-500
+                        background: '#ad663d', // fuchsia-500
                         zIndex: 10,
                       }} />
                     )}

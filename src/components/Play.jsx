@@ -14,6 +14,7 @@ import InputBox from './InputBox';
 import Clear from './Clear';
 import Add from './Add';
 import Disk from './Disk';
+import dw from '../assets/dw.png';
 
 export default function Play({
   queue = [],
@@ -138,6 +139,7 @@ export default function Play({
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen top-13">
+      {/* Board image in original position */}
       <div>
         <img
           src={board}
@@ -146,87 +148,96 @@ export default function Play({
           style={{ width: '25%', height: '85%' }}
         />
       </div>
-      <div className="absolute top-20 left-18">
-        <img
-          src={isPlaying ? stop : play} // Toggle image based on state
-          alt={isPlaying ? 'Stop Button' : 'Play Button'}
-          className="w-28 h-28 transform transition-transform duration-150 active:scale-75"
-          onClick={async () => {
-            if (newVideoLink.trim() !== '') {
-              const isPlaylist = newVideoLink.includes('list='); // Check if the link is a playlist
-              if (isPlaylist) {
-                const playlistId = extractPlaylistId(newVideoLink); // Extract the playlist ID
-                if (playlistId) {
-                  const videos = await fetchPlaylistVideos(playlistId); // Fetch videos from the playlist
-                  if (videos.length > 0) {
-                    const updatedQueue = videos.map((video) => ({
-                      url: `https://www.youtube.com/watch?v=${video.videoId}`,
-                      title: video.title, // Use the actual title of the video
-                    }));
-                    setQueue((prevQueue) => [...prevQueue, ...updatedQueue]); // Add all videos to the queue
-                    setCurrentVideoIndex(queue.length); // Set the first video of the playlist as the current video
-                    setIsPlaying(true); // Start playback
+      {/* Controls Grid absolutely positioned over board */}
+      <div className="absolute top-0 left-6 z-10 flex flex-col items-center justify-center" style={{ width: '25%', height: '85%' }}>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[220px] h-[420px] flex flex-col items-center justify-center">
+          <div className="grid grid-cols-2 grid-rows-4 gap-x-15 gap-y-8 w-full h-full items-center justify-center">
+            {/* Row 1 */}
+            <button className="flex items-center justify-center  w-27 h-20 rounded-full bg-transparent p-0  focus:outline-none" style={{ marginLeft: '-13px' }}  onClick={async () => {
+              if (newVideoLink.trim() !== '') {
+                const isPlaylist = newVideoLink.includes('list=');
+                if (isPlaylist) {
+                  const playlistId = extractPlaylistId(newVideoLink);
+                  if (playlistId) {
+                    const videos = await fetchPlaylistVideos(playlistId);
+                    if (videos.length > 0) {
+                      const updatedQueue = videos.map((video) => ({
+                        url: `https://www.youtube.com/watch?v=${video.videoId}`,
+                        title: video.title,
+                      }));
+                      setQueue((prevQueue) => [...prevQueue, ...updatedQueue]);
+                      setCurrentVideoIndex(queue.length);
+                      setIsPlaying(true);
+                    } else {
+                      alert('No videos found in the playlist.');
+                    }
                   } else {
-                    alert('No videos found in the playlist.');
+                    alert('Invalid playlist link.');
                   }
                 } else {
-                  alert('Invalid playlist link.');
+                  const videoId = extractVideoId(newVideoLink);
+                  if (videoId) {
+                    const title = await fetchVideoTitle(videoId);
+                    addVideoToQueue({ url: newVideoLink, title });
+                    setCurrentVideoIndex(queue.length);
+                    setIsPlaying(true);
+                  } else {
+                    alert('Invalid video link.');
+                  }
                 }
+                setNewVideoLink('');
+              } else if (queue.length > 0) {
+                setIsPlaying(!isPlaying);
               } else {
-                const videoId = extractVideoId(newVideoLink); // Extract the video ID
-                if (videoId) {
-                  const title = await fetchVideoTitle(videoId); // Fetch the video title
-                  addVideoToQueue({ url: newVideoLink, title }); // Add the video to the queue
-                  setCurrentVideoIndex(queue.length); // Set the new video as the current video
-                  setIsPlaying(true); // Start playback
-                } else {
-                  alert('Invalid video link.');
-                }
+                alert('Please enter a valid YouTube link or add videos to the queue.');
               }
-              setNewVideoLink(''); // Clear the input field
-            } else if (queue.length > 0) {
-              setIsPlaying(!isPlaying); // Toggle play/pause if the queue is not empty
-            } else {
-              alert('Please enter a valid YouTube link or add videos to the queue.'); // Show alert if no song in queue and no link in input box
-            }
-          }}
-        />
+            }}>
+              <img src={isPlaying ? stop : play} alt={isPlaying ? 'Stop Button' : 'Play Button'} className="w-full h-full object-contain " />
+            </button>
+            <button className="flex items-center justify-center w-18 h-20 rounded-full bg-transparent p-0  focus:outline-none" onClick={() => setIsRepeat(!isRepeat)}>
+              <Repeat isRepeat={isRepeat} />
+            </button>
+            {/* Row 2 */}
+            <button className="flex items-center justify-center w-18 h-20 rounded-full bg-transparent p-0 focus:outline-none" onClick={() => setCurrentVideoIndex((prev) => (prev === 0 ? queue.length - 1 : prev - 1))}>
+              <Back />
+            </button>
+            <button className="flex items-center justify-center w-18 h-20 rounded-full bg-transparent p-0 focus:outline-none" onClick={() => {
+              if (queue.length > 0) {
+                setCurrentVideoIndex((prev) => (prev + 1) % queue.length);
+              }
+            }}>
+              <Next />
+            </button>
+            {/* Row 3 */}
+            <button className="flex items-center justify-center w-18 h-20 rounded-full bg-transparent p-0 focus:outline-none" onClick={handleAddVideo}>
+              <Add />
+            </button>
+            <button className="flex items-center justify-center w-18 h-20 rounded-full bg-transparent p-0 focus:outline-none" onClick={handleClearQueue}>
+              <Clear />
+            </button>
+            <div></div> {/* Empty cell for spacing */}
+            {/* Row 4 */}
+
+            <button className="flex items-center justify-center w-25 h-20 rounded-full bg-transparent p-0 focus:outline-none" style={{ marginLeft: '-11px' }} onClick={() => {
+              const url = queue[currentVideoIndex]?.url;
+              if (url) {
+                window.open(`http://localhost:3001/download?url=${encodeURIComponent(url)}`, '_blank');
+              } else {
+                alert('No song is currently playing.');
+              }
+            }} title="Download MP3 of current song">
+              <img src={dw} alt="Download MP3" className="w-full h-full object-contain" />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Input for Adding Videos */}
-      <div className="absolute bottom-35 left-19">
+      <div className="absolute bottom-35 left-19 z-50">
         <InputBox
           newVideoLink={newVideoLink}
           setNewVideoLink={setNewVideoLink}
-          handleAddVideo={handleAddVideo} // Pass the add video handler
         />
-      </div>
-      <div className="absolute top-20 left-58">
-        <Repeat isRepeat={isRepeat} handleRepeatToggle={() => setIsRepeat(!isRepeat)} />
-      </div>
-
-      {/* Back Button */}
-      <div className="absolute top-60 left-18">
-        <Back handleBackClick={() => setCurrentVideoIndex((prev) => (prev === 0 ? queue.length - 1 : prev - 1))} />
-      </div>
-
-      {/* Next Button */}
-      <div className="absolute top-60 left-58">
-        <Next
-          handleNextClick={() => {
-            if (queue.length > 0) {
-              setCurrentVideoIndex((prev) => (prev + 1) % queue.length); // Move to the next song
-            }
-          }}
-        />
-      </div>
-
-      {/* Clear Button */}
-      <div className="absolute top-100 left-58">
-        <Clear handleClearQueue={handleClearQueue} />
-      </div>
-      <div className="absolute top-100 left-19">
-        <Add handleAddVideo={handleAddVideo} /> {/* Pass the add video handler */}
       </div>
 
       {/* Disk */}
