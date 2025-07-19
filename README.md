@@ -61,56 +61,44 @@ npm run dev
 
 ## Backend for YouTube-to-MP3 Downloads
 
+### Deploying on Railway (Recommended)
+
 1. Go to the `backend` folder:
    ```sh
    cd backend
    ```
-2. Install dependencies:
-   ```sh
-   npm install
+2. Make sure you have a `Dockerfile` in the `backend/` directory (already included in this repo).
+3. The Dockerfile will install `ffmpeg` and `yt-dlp` for you in the Railway environment.
+4. In your `server.js`, the following lines ensure the correct binaries are used:
+   ```js
+   const ytdlpPath = 'yt-dlp'; // Linux binary in PATH
+   const ffmpegPath = 'ffmpeg'; // Linux binary in PATH
    ```
-3. Start the backend server:
+5. Push your code to GitHub.
+6. On Railway:
+   - Create a new project and add a service with the root directory set to `backend/`.
+   - Railway will detect the Dockerfile and build your backend.
+   - Once deployed, you’ll get a public backend URL (e.g., `https://your-backend-name.up.railway.app`).
+
+### Deploying the Frontend on Railway
+
+1. Add a new service in the same Railway project for your frontend (set root to `/` or your frontend directory).
+2. Set the build command to `npm run build` and the output directory to `dist` (for Vite).
+3. Update your frontend code to use the backend’s Railway URL for API calls.
+
+---
+
+## Backend Setup: YouTube-to-MP3 Downloads (Local Development)
+
+If you want to run the backend locally (for development):
+
+1. Install [yt-dlp](https://github.com/yt-dlp/yt-dlp/releases/latest) and [ffmpeg](https://www.gyan.dev/ffmpeg/builds/) on your system.
+2. Update the paths in `server.js` to point to your local binaries if needed.
+3. Run the backend as usual:
    ```sh
+   cd backend
+   npm install
    node server.js
    ```
-4. The backend will run on `http://localhost:3001`. The frontend will connect to this server for MP3 downloads.
-
-**Note:** You need `yt-dlp` installed on your system and available in your PATH. Download it from https://github.com/yt-dlp/yt-dlp/releases if you don't have it.
-
-## Backend Setup: YouTube-to-MP3 Downloads
-
-### 1. Install yt-dlp
-- Download yt-dlp for Windows: https://github.com/yt-dlp/yt-dlp/releases/latest
-- You can use `winget install yt-dlp` or download the .exe directly.
-- Find the full path to `yt-dlp.exe` (e.g., `C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.yt-dlp_Microsoft.Winget.Source_8wekyb3d8bbwe/yt-dlp.exe`).
-
-### 2. Install ffmpeg
-- Download from https://www.gyan.dev/ffmpeg/builds/
-- Extract the ZIP, e.g., to `C:/ffmpeg/`
-- Add `C:/ffmpeg/bin` to your system PATH (see below).
-- Or, use the full path to `ffmpeg.exe` in your backend code.
-
-### 3. Update backend/server.js
-- Set the full path to yt-dlp and ffmpeg:
-  ```js
-  const ytdlpPath = 'C:/Users/HP/AppData/Local/Microsoft/WinGet/Packages/yt-dlp.yt-dlp_Microsoft.Winget.Source_8wekyb3d8bbwe/yt-dlp.exe';
-  const ffmpegPath = 'C:/ffmpeg/bin/ffmpeg.exe';
-  ```
-- Save and restart your backend:
-  ```sh
-  cd backend
-  node server.js
-  ```
-
-### 4. Test the Backend
-- Use your app's download button.
-- If you get a 0-byte file or ERR_INVALID_RESPONSE, check your backend terminal for errors.
-- Common error: `ENOENT` means the path to yt-dlp.exe or ffmpeg.exe is wrong.
-
-### 5. Troubleshooting
-- If the download hangs or is 0 bytes, check the backend terminal for errors.
-- If you see `'yt-dlp.exe' is not recognized`, update the path in server.js.
-- If you see `ffmpeg not found`, update the ffmpeg path or add it to your PATH.
-- Always restart your backend after making changes.
 
 ---
