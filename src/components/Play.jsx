@@ -221,7 +221,7 @@ export default function Play({
             <button className="flex items-center justify-center w-25 h-20 rounded-full bg-transparent p-0 focus:outline-none" style={{ marginLeft: '-11px' }} onClick={() => {
               const url = queue[currentVideoIndex]?.url;
               if (url) {
-                window.open(`http://localhost:3001/download?url=${encodeURIComponent(url)}`, '_blank');
+                window.open(`https://vintage-vinyl-production.up.railway.app/download?url=${encodeURIComponent(url)}`, '_blank');
               } else {
                 alert('No song is currently playing.');
               }
