@@ -1,28 +1,63 @@
-# Vinyl Music Player
+# 🎵 Vintage Vinyl
+
+> “Not just a player, a whole mood — Vintage Vinyl.”
+
+Bringing vinyl vibes to the web.  
+A cozy, ad-free music player that spins like the good old days.
+
+[🌐 Check it out](https://lnkd.in/gENX7_DY)
+
+---
 
 ## Introduction
 Vinyl is a modern, interactive web music player that brings the nostalgia of vinyl records to your browser. It features a beautiful vinyl-style UI, animated controls, and seamless integration with YouTube. Users can queue up YouTube videos or playlists, control playback with a classic turntable interface, and even download MP3 versions of songs directly from the app using a custom backend.
 
-## Features
+## ✨ Features
 - 🎵 **YouTube Queue & Playlist:** Add individual YouTube videos or entire playlists to your queue.
-- 🕹️ **Vinyl-Style UI:** Enjoy a visually rich, animated vinyl record and tonearm for playback.
-- 🌀 **Animated Controls:** Play, pause, skip, repeat, and clear the queue with smooth, interactive buttons.
-- ⬇️ **Direct MP3 Download:** Download the current playing song as an MP3 using the built-in backend (yt-dlp + ffmpeg).
-- 📱 **Responsive Design:** Works beautifully on desktop and mobile devices.
-- 🎨 **Customizable & Modern:** Built with React, Tailwind CSS, and framer-motion for a sleek, modern experience.
+- 🕹️ **Vinyl-Style Animated UI:** Spinning record, moving tonearm, and retro controls.
+- 🌀 **Smooth Animated Controls:** Play, pause, skip, repeat, and clear the queue with interactive buttons.
+- ⬇️ **Direct MP3 Download:** Download the currently playing song as an MP3 (yt-dlp + ffmpeg backend).
+- 📺 **Ad-Free Playback via YouTube:** Enjoy music without interruptions.
+- 🎶 **Supports Playlists & Single Tracks:** Flexible queue management.
+- 📜 **Queue List with Thumbnails:** See what’s coming up, complete with video thumbnails and titles.
+- 🧼 **Clean Retro Aesthetic:** Soft tones, warm minimalism, and modern design.
+- ⚡ **Lightweight & Responsive:** Fast, fluid, and works beautifully on desktop and mobile.
+- 🎨 **Customizable & Modern:** Built with React, Tailwind CSS, framer-motion, and more.
+- 🛠️ **Backend Integration:** Express server with CORS, yt-dlp, and ffmpeg for YouTube-to-MP3 conversion.
 
-# React + Vite
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🛠️ Tech Stack
 
-Currently, two official plugins are available:
+| Tech         | Purpose/Usage                        |
+|--------------|--------------------------------------|
+| ReactJS      | UI Framework                         |
+| Vite         | Frontend build tool/bundler          |
+| Tailwind CSS | Styling (utility-first CSS)          |
+| framer-motion| Animations and transitions           |
+| Express      | Backend server for downloads         |
+| yt-dlp       | YouTube video/audio downloader       |
+| ffmpeg       | Audio conversion to MP3 (backend)    |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+
+- Node.js >= 14
+- npm or yarn
+
+### Installation
+
+```bash
+git clone https://github.com/portgasdyamato/Vintage-Vinyl.git
+cd Vintage-Vinyl
+npm install
+npm run dev
+```
+
+---
 
 ## Backend for YouTube-to-MP3 Downloads
 
