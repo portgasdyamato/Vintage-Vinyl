@@ -23,7 +23,7 @@ app.get('/download', (req, res) => {
     '-f', 'bestaudio',
     '--extract-audio',
     '--audio-format', 'mp3',
-    '--cookies', 'cookies.txt', // Use cookies for authentication
+    '--cookies', 'cookies.txt', // Use local cookies.txt for Railway
     '-o', '-',
     url
   ]);
