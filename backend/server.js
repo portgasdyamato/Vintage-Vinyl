@@ -23,7 +23,7 @@ app.get('/download', (req, res) => {
     '-f', 'bestaudio',
     '--extract-audio',
     '--audio-format', 'mp3',
-    '--ffmpeg-location', ffmpegPath,
+    '--cookies', 'cookies.txt', // Use cookies for authentication
     '-o', '-',
     url
   ]);
