@@ -1,7 +1,7 @@
 # Backend Notes
 
 ## Using cookies.txt for yt-dlp Authentication
-
+ 
 - Place your `cookies.txt` file in this directory for yt-dlp authentication with YouTube.
 - **Do NOT commit this file to git or share it publicly.**
 - Add `backend/cookies.txt` to your `.gitignore` to prevent accidental commits.
