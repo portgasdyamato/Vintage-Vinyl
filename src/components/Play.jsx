@@ -842,22 +842,9 @@ export default function Play({
 
   return (
     <div className="relative flex flex-col items-center justify-center h-screen w-full pt-16 pb-20 overflow-hidden bg-transparent">
-      {/* Desktop/laptop: original board and controls layout */}
-      <div className="main-controls hidden lg:block">
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <img
-            src={board}
-            alt=""
-            className="w-[30%] h-auto opacity-80"
-          />
-        </div>
-        <div className="absolute top-0 left-6 z-10 flex flex-col items-center justify-center pointer-events-none" style={{ width: '25%', height: '85%' }}>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[220px] h-[420px] flex flex-col items-center justify-center pointer-events-auto">
-            <div className="grid grid-cols-2 grid-rows-4 gap-x-15 gap-y-8 w-full h-full items-center justify-center">
-              {ControlsPanel}
-            </div>
-          </div>
-        </div>
+      {/* Desktop layout now follows the 'perfect' Android layout for consistency and cleanliness */}
+      <div className="hidden lg:block absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-v from-transparent via-black/20 to-transparent" />
       </div>
 
 
@@ -985,7 +972,7 @@ export default function Play({
 
       {/* Disk Section - Enlarged for Mobile Hero Presence */}
       <div className={`flex-1 flex items-center justify-center w-full relative z-10 px-4 transition-all duration-1000 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100 blur-0'}`}>
-        <div className="relative transform sm:scale-110 lg:scale-125">
+        <div className="relative transform sm:scale-110 lg:scale-110">
           <Disk
             isPlaying={isPlaying}
             videoUrl={queue[currentVideoIndex]?.url || ''}
