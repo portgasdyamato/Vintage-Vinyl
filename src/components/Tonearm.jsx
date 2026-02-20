@@ -1,6 +1,6 @@
 import arm from "../assets/arm.png";
 
-export default function Tonearm({ isPlaying }) {
+export default function Tonearm({ isPlaying, parkAngle = '-10deg' }) {
     return (
         <div className="absolute top-0 right-0 h-full w-full flex items-start justify-end pointer-events-none z-20">
             <img
@@ -10,7 +10,7 @@ export default function Tonearm({ isPlaying }) {
                 style={{
                     width: 'clamp(140px, 35vw, 350px)',
                     height: 'auto',
-                    transform: `rotate(${isPlaying ? '18deg' : '-5deg'})`,
+                    transform: `rotate(${isPlaying ? '18deg' : parkAngle})`,
                     transformOrigin: '50% 15%', // Precision pivot
                     marginTop: '5%',
                     marginRight: '5%',
