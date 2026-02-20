@@ -1,95 +1,104 @@
+/* Responsive Layout Enhancements */
+@media (max-width: 1024px) {
+  .main-controls {
+    display: none !important;
+  }
+  
+  .mobile-sidebar-toggle {
+    background: #b88c5a;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    border: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .mobile-sidebar-toggle:active {
+    transform: scale(0.9);
+  }
+
+
+}
+
 body {
   margin: 0;
   padding: 0;
-  overflow: hidden; /* Prevent scrolling */
-  font-family: Arial, sans-serif;
-  height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
+  overflow: hidden; 
+  background: #000;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  color: #fff;
 }
 
 #root {
-  position: relative; /* Ensure content is positioned above the video */
-  z-index: 1; /* Place content above the video */
-  max-width: 100vw; /* Ensure the root container does not exceed the viewport width */
-  overflow-x: hidden; /* Prevent horizontal overflow */
-  overflow-y: hidden; /* Prevent vertical overflow */
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.video-container {
-  position: fixed; /* Fix the video to the viewport */
-  top: 0;
-  left: 0;
-  width: 100%; /* Cover the entire width */
-  height: 100%; /* Cover the entire height */
-  z-index: -1; /* Place the video behind all content */
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 
+.video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background: #000; /* Prevent startup flicker */
+}
+
 .background-video {
-  width: 100%; /* Cover the entire width */
-  height: 100%; /* Cover the entire height */
-  object-fit: cover; /* Ensure the video covers the viewport without distortion */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.8; /* Slight darkening for better contrast */
 }
 
 @import "tailwindcss";
-@import "tailwindcss/preflight";
-@tailwind utilities;
 
 .rotating-disk {
-  animation: rotate 10s linear infinite; /* 10 seconds for a slow rotation */
+  animation: rotate 20s linear infinite; 
 }
 
 @keyframes rotate {
-  from {
-      transform: rotate(0deg);
-  }
-  to {
-      transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.spotify-input {
-  border: 4px solid #8f4a00; /* Dark pink border */
-  background-color: rgb(255, 255, 255); /* White background */
-  border-radius: 9999px; /* Fully rounded corners */
-  height: 3rem; /* Height of the input box */
-  padding: 0 1rem; /* Horizontal padding */
-  width: 17rem; /* Width of the input box */
-  font-size: 1rem; /* Font size */
-  outline: none; /* Remove default focus outline */
-  transition: border-color 0.3s ease; /* Smooth transition for border color */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3),
-  0 4px 6px rgba(0, 0, 0, 0.6);
-}
-
-.spotify-input:focus {
-  border-color: #874300; /* Slightly darker pink on focus */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5),
-  0 4px 6px rgba(0, 0, 0, 0.8);
-}
-
-/* Logo Hover Animation */
 .logo-hover {
-  transition: transform 0.3s ease-in-out; /* Smooth transition */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .logo-hover:hover {
-  animation: float 2s infinite ease-in-out; /* Apply floating animation */
+  transform: translateY(-5px) scale(1.05);
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0); /* Initial position */
-  }
-  50% {
-    transform: translateY(-10px); /* Move up */
-  }
-  100% {
-    transform: translateY(0); /* Return to initial position */
-  }
+.menu-hover {
+  transition: transform 0.3s ease-in-out;
+}
+
+.menu-hover:hover {
+  transform: scale(1.1);
+}
+
+.smooth-rotation {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 .menu-hover {
   transition: transform 0.3s ease-in-out; /* Smooth transition */
@@ -140,4 +149,38 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Webkit */
+}
+
+/* World-Class Design Animations */
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { color: #b88c5a; text-shadow: 0 0 10px rgba(184,140,90,0); }
+  50% { color: #d4a77a; text-shadow: 0 0 20px rgba(184,140,90,0.5); }
+  100% { color: #b88c5a; text-shadow: 0 0 10px rgba(184,140,90,0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+/* Premium Typography & Layout */
+.font-serif {
+  font-family: 'Playfair Display', serif;
 }

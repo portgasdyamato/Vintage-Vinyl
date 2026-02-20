@@ -1,21 +1,21 @@
 import React from 'react';
 import '../App.css';
 
-export default function InputBox({ newVideoLink, setNewVideoLink }) {
+export default function InputBox({ newVideoLink, setNewVideoLink, onAdd }) {
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-          handleAddVideo(); // Trigger the add video function when Enter is pressed
+          onAdd(); // Trigger the add video function when Enter is pressed
         }
       };
   return (
-    <div>
+    <div className="w-full">
       <input
         type="text"
-        placeholder="Enter YouTube link"
+        placeholder="Drop a YouTube video or playlist link here..."
         value={newVideoLink}
         onChange={(e) => setNewVideoLink(e.target.value)}
         onKeyDown={handleKeyPress}
-        className="spotify-input mb-2"
+        className="w-full bg-black/40 border border-white/10 text-white placeholder:text-white/30 rounded-full py-4 px-6 focus:outline-none focus:ring-2 focus:ring-[#b88c5a]/50 backdrop-blur-md transition-all duration-300 text-sm sm:text-base"
       />
     </div>
   );

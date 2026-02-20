@@ -2,20 +2,21 @@ import arm from "../assets/arm.png";
 
 export default function Tonearm({ isPlaying }) {
     return (
-        <div className="absolute top-1/2 right-25 transform -translate-y-1/2 flex items-center justify-center">
-            
+        <div className="absolute top-0 right-0 h-full w-full flex items-start justify-end pointer-events-none z-20">
             <img
                 src={arm}
                 alt="Tonearm"
-                className="transform transition-transform duration-150 rotate-y-10 trnaslate-z-100"
+                className="transform transition-transform duration-700 ease-in-out"
                 style={{
-                    width: '350px',
-                    height: '600px',
-                    rotate: isPlaying ? '75deg' : '35deg',
+                    width: 'clamp(140px, 35vw, 350px)',
+                    height: 'auto',
+                    transform: `rotate(${isPlaying ? '18deg' : '-10deg'})`,
+                    transformOrigin: '50% 15%', // Precision pivot
+                    marginTop: '5%',
+                    marginRight: '5%',
+                    filter: 'drop-shadow(0 25px 40px rgba(0,0,0,0.8))'
                 }}
             />
-            
-
         </div>
     );
 }

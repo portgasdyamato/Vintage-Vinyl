@@ -4,15 +4,14 @@ import repeaty from '../assets/repeaty.png'; // Import the active repeat image
 
 export default function Repeat({ isRepeat, handleRepeatToggle }) {
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center w-full h-full">
             <div
-                className={`relative w-28 h-28 transform transition-transform duration-150 active:scale-75 `} // Add shadow when repeat is active
-                onClick={handleRepeatToggle} // Toggle repeat mode on click
+                className="w-full h-full transform transition-transform duration-150 active:scale-75"
             >
                 <img
-                    src={isRepeat ? repeat : repeaty} // Change image based on repeat state
-                    alt="Repeat Button"
-                    className="w-full h-full rounded-full"
+                    src={isRepeat ? repeat : repeaty}
+                    alt="Repeat"
+                    className="w-full h-full object-contain"
                 />
             </div>
         </div>

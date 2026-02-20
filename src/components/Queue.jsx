@@ -32,105 +32,173 @@ const AnimatedItem = ({ children, delay = 0, index, onMouseEnter, onClick }) => 
 
 const AnimatedList = ({
   items = [],
+  favorites = [],
   onItemSelect,
   handleRemove,
-  currentVideoIndex = 0, // highlight current
-  progress = 0, // NEW: progress of current song (0 to 1)
+  currentVideoIndex = 0,
+  progress = 0,
+  setFavorites,
   className = '',
   itemClassName = '',
 }) => {
+  const [activeTab, setActiveTab] = useState('queue'); // 'queue' or 'favorites'
+
+  const listItems = activeTab === 'queue' ? items : favorites;
+
+  const toggleFavorite = (e, item) => {
+    e.stopPropagation();
+    const isFav = favorites.some(f => f.url === item.url);
+    if (isFav) {
+      setFavorites(favorites.filter(f => f.url !== item.url));
+    } else {
+      setFavorites([...favorites, item]);
+    }
+  };
   return (
     <div
-      className="fixed top-32 right-8 z-50 w-[420px] max-w-[98vw] p-0 bottom-5"
-      style={{
-        transition: 'box-shadow 0.3s, background 0.3s',
-      }}
+      className="fixed inset-0 sm:inset-auto sm:top-24 sm:right-8 z-[200] sm:w-[420px] pointer-events-none flex items-center justify-center sm:block p-6 sm:p-0"
     >
-      {/* Glassmorphism Container */}
-      <div className="backdrop-blur-xl bg-white/30 border border-white/30 rounded-3xl shadow-2xl px-10 flex flex-col items-center justify-center min-h-[70vh] overflow-visible" style={{boxShadow:'0 8px 32px 0 rgba(31, 38, 135, 0.37)', margin: '18px', paddingTop: '32px', paddingBottom: '32px'}}>
-        <div className="max-h-[60vh] overflow-y-auto flex flex-col items-center gap-y-4 scrollbar-hide py-2 pb-16 overflow-visible w-full">
-          {items.length === 0 ? (
-            <div className="flex flex-1 min-h-[60vh] w-full justify-center items-center">
-              <div className="text-center text-gray-600 py-8 rounded-xl  font-semibold">
-                No songs in queue
+      {/* Glassmorphism Container - Dark Theme */}
+      <div className="backdrop-blur-3xl bg-black/60 border border-white/10 rounded-[32px] shadow-[0_25px_80px_rgba(0,0,0,0.9)] flex flex-col w-full max-h-[75vh] sm:max-h-[600px] overflow-hidden pointer-events-auto transform transition-all duration-700 animate-slide-in">
+        
+        <div className="w-full px-8 py-6 border-b border-white/5 flex flex-col gap-4 bg-white/5">
+          <div className="flex justify-between items-center">
+            <div className="flex flex-col">
+              <h2 className="text-[#b88c5a] font-medium text-xs uppercase tracking-[0.3em]">{activeTab}</h2>
+              <p className="text-white/40 text-[10px] uppercase font-bold mt-1">
+                {activeTab === 'queue' ? 'Up Next' : 'Your Collection'}
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-white/20 text-[10px] font-bold uppercase tracking-tighter">{listItems.length} tracks</span>
+              <div className="w-2 h-2 rounded-full bg-[#b88c5a] animate-pulse shadow-[0_0_8px_#b88c5a]" />
+            </div>
+          </div>
+          
+          {/* Tab Switcher */}
+          <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+            <button 
+              onClick={() => setActiveTab('queue')}
+              className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${activeTab === 'queue' ? 'bg-white/10 text-[#b88c5a] shadow-lg' : 'text-white/30 hover:text-white/50'}`}
+            >
+              Queue
+            </button>
+            <button 
+              onClick={() => setActiveTab('favorites')}
+              className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${activeTab === 'favorites' ? 'bg-white/10 text-[#b88c5a] shadow-lg' : 'text-white/30 hover:text-white/50'}`}
+            >
+              Favorites
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-y-auto flex flex-col gap-y-2 scroll-smooth scrollbar-hide p-6 w-full">
+          {listItems.length === 0 ? (
+            <div className="flex flex-col flex-1 min-h-[30vh] w-full justify-center items-center gap-6 text-center py-10">
+              <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                 <svg className="w-10 h-10 text-white/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 14.5c-2.49 0-4.5-2.01-4.5-4.5S9.51 7.5 12 7.5s4.5 2.01 4.5 4.5-2.01 4.5-4.5 4.5z"/>
+                 </svg>
+              </div>
+              <div className="flex flex-col gap-2">
+                <p className="text-white/60 font-medium tracking-wide">
+                  {activeTab === 'queue' ? 'Queue is empty' : 'No favorites yet'}
+                </p>
+                <p className="text-white/20 text-xs uppercase tracking-widest font-bold">
+                  {activeTab === 'queue' ? 'Add some tunes' : 'Heart a song to save it'}
+                </p>
               </div>
             </div>
           ) : (
-            items.map((item, index) => {
-              const isCurrent = index === currentVideoIndex;
+            listItems.map((item, index) => {
+              const isCurrent = activeTab === 'queue' && index === currentVideoIndex;
+              const isFav = favorites.some(f => f.url === item.url);
               const thumbnail = getYouTubeThumbnail(item.url);
-              const isFirst = index === 0;
-              const isLast = index === items.length - 1;
-              // Dynamic background for current item
               const progressPercent = Math.max(0, Math.min(1, progress)) * 100;
-              const background = isCurrent
-                ? `linear-gradient(90deg, rgba(183, 150, 97, 0.56) ${progressPercent}%, rgba(255,255,255,0.0) ${progressPercent}%)`
-                : undefined;
+              
               return (
                 <AnimatedItem
                   key={index}
                   index={index}
-                  onClick={() => onItemSelect(index)}
+                  onClick={() => onItemSelect(item, activeTab, index)}
                 >
                   <div
                     className={`
-                      flex items-center gap-4 py-3 w-90 mx-auto my-3 rounded-2xl transition-all duration-200
-                      shadow-sm bg-rose-500/10 hover:bg-[#eccdcd]/80 cursor-pointer
-                      ${isCurrent ? 'shadow-xl shadow-black/20 border-0.9 border-black/20 border-l-8 border-fuchsia-500 relative' : ''}
+                      flex items-center gap-4 p-4 w-full rounded-2xl transition-all duration-500
+                      ${isCurrent ? 'bg-white/10 shadow-2xl scale-[1.02] border border-white/20' : 'bg-white/[0.03] hover:bg-white/[0.08] border border-white/5'}
+                      cursor-pointer group relative overflow-hidden
                     `}
-                    style={{
-                      minHeight: '64px',
-                      border: isCurrent ? '1px solid pink' : '1px solid #e0e0e0',
-                      borderBottomLeftRadius: '16px',
-                      borderBottomRightRadius: '16px',
-                      zIndex: isCurrent ? 2 : 1,
-                      backgroundImage: background,
-                      ...(isCurrent ? { borderLeft: 'none' } : {}),
-                    }}
                   >
-                    {/* Thumbnail */}
-                    <div className="flex items-center">
-                       <div className="w-2"></div>
-                        <div className={`flex-shrink-0 w-12 h-12 mr-3 rounded-full overflow-hidden bg-gray-200 border-2 shadow-md flex items-center justify-center ${isCurrent ? 'border-pink-700' : 'border-[#b88c5a]'}`}>
-                          {thumbnail ? (
-                            <img src={thumbnail} alt="thumbnail" className="w-full h-full object-cover" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No Image</div>
-                          )}
-                        </div>
-                    </div>
-                    {/* Song Title */}
-                    <p className={`text-gray-800 text-base font-normal font-sans flex-1 text-left break-words ${isCurrent ? 'text-[#b88c5a]' : ''}`}
-                      style={{letterSpacing:'0.01em', fontWeight: 400}}>
-                      {item.title}
-                    </p>
-                    {/* Remove Button */}
-                    <button
-                      className="flex items-center justify-center w-10 h-10 ml-2 rounded-full hover:bg-[#ffe6e0] transition"
-                      onClick={e => {
-                        e.stopPropagation();
-                        handleRemove(index);
-                      }}
-                      tabIndex={-1}
-                      aria-label="Remove"
-                      type="button"
-                    >
-                      <Remove className="w-6 h-6 text-gray-400 hover:text-rose-400 transition" />
-                    </button>
-                    {/* Absolute left border overlay for current item */}
+                    {/* Progress Background */}
                     {isCurrent && (
-                      <div style={{
-                        position: 'absolute',
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: '13px',
-                        borderTopLeftRadius: '16px',
-                        borderBottomLeftRadius: '16px',
-                        background: '#ad663d', // fuchsia-500
-                        zIndex: 10,
-                      }} />
+                      <div 
+                        className="absolute inset-0 bg-[#b88c5a]/10 pointer-events-none transition-all duration-1000"
+                        style={{ width: `${progressPercent}%` }}
+                      />
                     )}
+
+                    {/* Thumbnail */}
+                    <div className={`relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden shadow-2xl border ${isCurrent ? 'border-[#b88c5a] rotate-3' : 'border-white/10 group-hover:border-white/20'}`}>
+                      {thumbnail ? (
+                        <img src={thumbnail} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        item.isLocal ? (
+                          <div className="w-full h-full bg-[#b88c5a]/20 flex items-center justify-center text-[10px] text-[#b88c5a] font-bold">MP3</div>
+                        ) : (
+                          <div className="w-full h-full bg-black/10 flex items-center justify-center text-[10px] text-white/20">NO IMG</div>
+                        )
+                      )}
+                      {isCurrent && (
+                        <div className="absolute inset-0 bg-[#b88c5a]/20 flex items-center justify-center">
+                          <div className="w-1 h-3 bg-white rounded-full animate-bounce mx-0.5" />
+                          <div className="w-1 h-5 bg-white rounded-full animate-bounce [animation-delay:0.2s] mx-0.5" />
+                          <div className="w-1 h-2 bg-white rounded-full animate-bounce [animation-delay:0.4s] mx-0.5" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Song Title */}
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className={`text-[13px] font-medium leading-tight line-clamp-2 transition-colors duration-300 ${isCurrent ? 'text-white' : 'text-white/70 group-hover:text-white'}`}>
+                        {item.title}
+                      </p>
+                      {activeTab === 'favorites' && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[9px] text-white/30 uppercase font-bold tracking-tighter">My Favorites</span>
+                        </div>
+                      )}
+                      {isCurrent && (
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-[10px] text-[#b88c5a] font-bold uppercase tracking-widest text-[#b88c5a]">Playing</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-1">
+                      <button
+                        className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${isFav ? 'text-red-500 bg-red-500/10' : 'text-white/10 hover:text-white/30'}`}
+                        onClick={e => toggleFavorite(e, item)}
+                        title={isFav ? "Remove from Favorites" : "Add to Favorites"}
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                      </button>
+                      
+                      {activeTab === 'queue' && (
+                        <button
+                          className="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-red-500/20 hover:text-red-400 transition-all text-white/10 group-hover:text-white/30"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleRemove(index);
+                          }}
+                          aria-label="Remove"
+                        >
+                          <Remove className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </AnimatedItem>
               );

@@ -2,15 +2,14 @@ import back from '../assets/back.png';
 
 export default function Back({ handleBackClick }) {
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center w-full h-full">
             <div
-                className="relative w-28 h-28 transform transition-transform duration-150 active:scale-75 m-0 p-0"
-                onClick={handleBackClick} // Play the previous video on click
+                className="w-full h-full transform transition-transform duration-150 active:scale-75"
             >
                 <img
                     src={back}
-                    alt="Back Button"
-                    className="w-full h-full rounded-full m-0 p-0"
+                    alt="Back"
+                    className="w-full h-full object-contain"
                 />
             </div>
         </div>
