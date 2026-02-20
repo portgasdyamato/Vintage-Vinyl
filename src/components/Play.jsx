@@ -841,10 +841,10 @@ export default function Play({
   );
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-transparent lg:grid lg:grid-cols-[1fr,auto] lg:items-center lg:gap-0">
+    <div className="relative flex flex-col items-center justify-center h-screen w-full pt-16 pb-20 overflow-hidden bg-transparent">
       {/* Background/Navbar Spacing Buffer */}
       <div className="hidden lg:block absolute inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-gradient-to-v from-black/20 via-transparent to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-v from-black/40 via-transparent to-black/40" />
       </div>
 
 
@@ -853,10 +853,10 @@ export default function Play({
       {/* Sidebar for controls & Playlists - Unified Glassmorphism */}
       <>
         <div 
-          className={`fixed inset-0 bg-black/40 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-0 z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           onClick={() => setSidebarOpen(false)}
         />
-        <div className={`mobile-sidebar transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed lg:relative top-0 right-0 h-full lg:h-[calc(100vh-4rem)] w-[280px] sm:w-[320px] lg:w-[450px] bg-[#0a0a0a]/95 lg:bg-[#0a0a0a]/40 backdrop-blur-[40px] lg:backdrop-blur-[20px] z-[110] p-5 sm:p-8 lg:p-12 flex flex-col shadow-[-10px_0_60px_rgba(0,0,0,0.8)] lg:shadow-none border-l border-white/10 lg:mr-8 lg:my-8 lg:rounded-[3rem] lg:border-white/5`}>
+        <div className={`mobile-sidebar transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 h-full w-[280px] sm:w-[320px] lg:w-[380px] bg-[#0a0a0a]/95 backdrop-blur-[40px] z-[110] p-5 sm:p-8 lg:p-10 flex flex-col shadow-[-10px_0_60px_rgba(0,0,0,0.8)] border-l border-white/10`}>
           <button className="self-end mb-4 p-3 hover:bg-white/10 rounded-full transition-all group" onClick={() => setSidebarOpen(false)}>
             <svg className="group-hover:rotate-90 transition-transform duration-500 text-white/50" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -970,9 +970,9 @@ export default function Play({
         )}
       </>
 
-      {/* Main Feature Area (Disk) - Dynamically occupies remaining space on desktop */}
-      <div className={`flex flex-col items-center justify-center w-full h-full relative z-10 px-4 lg:px-20 transition-all duration-1000 ${sidebarOpen ? 'scale-90 lg:scale-[0.85] opacity-40 lg:opacity-100 blur-sm lg:blur-0' : 'scale-100 opacity-100 blur-0'}`}>
-        <div className="relative transform sm:scale-110 lg:scale-100">
+      {/* Disk Section - Hero focus on all platforms */}
+      <div className={`flex-1 flex items-center justify-center w-full relative z-10 px-4 transition-all duration-1000 ${sidebarOpen ? 'scale-90 lg:scale-[0.8] opacity-40 lg:opacity-60 blur-sm lg:blur-md' : 'scale-100 opacity-100 blur-0'}`}>
+        <div className="relative transform sm:scale-110 lg:scale-125">
           <Disk
             isPlaying={isPlaying}
             videoUrl={queue[currentVideoIndex]?.url || ''}
@@ -987,8 +987,8 @@ export default function Play({
         </div>
       </div>
 
-      {/* Input for Adding Videos - Positioned for flow on all platforms */}
-      <div className={`w-full max-w-md px-8 z-30 lg:absolute lg:bottom-12 lg:left-1/2 lg:-translate-x-1/2 mb-10 transition-all duration-500 ${sidebarOpen ? 'translate-y-20 opacity-0 pointer-events-none invisible' : 'translate-y-0 opacity-100'}`}>
+      {/* Input for Adding Videos - Cleanly floating at the bottom */}
+      <div className={`w-full max-w-sm sm:max-w-md px-8 z-30 mb-8 lg:mb-12 transition-all duration-500 ${sidebarOpen ? 'translate-y-20 opacity-0 pointer-events-none invisible' : 'translate-y-0 opacity-100'}`}>
         <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
           <div className="bg-black/60 backdrop-blur-3xl rounded-[22px] overflow-hidden">
             <InputBox
