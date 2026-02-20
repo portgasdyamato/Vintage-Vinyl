@@ -951,7 +951,7 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-10">
+          <div className="relative flex items-center justify-center w-full -mt-24">
             <div className="relative" style={{ width: 'min(52vh, 500px)', height: 'min(52vh, 500px)' }}>
               <Disk isPlaying={isPlaying} videoUrl={queue[currentVideoIndex]?.url || ''} onSeek={handleSeek} played={played} duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} />
               {/* Tonearm pushed further right so it clears the record when paused */}
@@ -973,8 +973,8 @@ export default function Play({
             )}
           </div>
 
-          {/* Desktop Input — centered below the disk */}
-          <div className="mt-4 w-full max-w-lg">
+          {/* Desktop Input — centered lower below the disk */}
+          <div className="mt-10 w-full max-w-lg">
             <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
               <div className="bg-black/60 backdrop-blur-3xl rounded-[22px] overflow-hidden">
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
