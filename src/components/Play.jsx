@@ -955,7 +955,7 @@ export default function Play({
             <div className="relative" style={{ width: 'min(52vh, 500px)', height: 'min(52vh, 500px)' }}>
               <Disk isPlaying={isPlaying} videoUrl={queue[currentVideoIndex]?.url || ''} onSeek={handleSeek} played={played} duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} />
               {/* Tonearm pushed further right so it clears the record when paused */}
-              <div className="absolute top-[-20%] right-[-45%] h-full w-full pointer-events-none">
+              <div className="absolute top-[-20%] right-[-60%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} />
               </div>
             </div>
