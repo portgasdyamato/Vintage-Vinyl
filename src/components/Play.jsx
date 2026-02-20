@@ -948,20 +948,21 @@ export default function Play({
       <div className="hidden lg:flex h-full w-full pt-16">
 
         {/* LEFT: Main Hero Area - Vinyl + Tonearm centered */}
-        <div className="flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16">
+        <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
-          {/* Vinyl + Tonearm Hero */}
-          <div className="relative flex items-center justify-center w-full" style={{ maxHeight: 'calc(100vh - 16rem)' }}>
-            <div className="relative" style={{ width: 'min(55vh, 520px)', height: 'min(55vh, 520px)' }}>
+          {/* Vinyl + Tonearm Hero - shifted upward */}
+          <div className="relative flex items-center justify-center w-full -mt-10">
+            <div className="relative" style={{ width: 'min(52vh, 500px)', height: 'min(52vh, 500px)' }}>
               <Disk isPlaying={isPlaying} videoUrl={queue[currentVideoIndex]?.url || ''} onSeek={handleSeek} played={played} duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} />
-              <div className="absolute top-[-18%] right-[-30%] h-full w-full pointer-events-none">
+              {/* Tonearm pushed further right so it clears the record when paused */}
+              <div className="absolute top-[-20%] right-[-45%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} />
               </div>
             </div>
           </div>
 
           {/* Currently Playing Info */}
-          <div className="mt-6 text-center max-w-md">
+          <div className="mt-4 text-center max-w-md">
             {currentSong ? (
               <>
                 <p className="text-white/90 font-medium text-base tracking-wide truncate">{currentSong.title || 'Now Playing'}</p>
@@ -973,7 +974,7 @@ export default function Play({
           </div>
 
           {/* Desktop Input — centered below the disk */}
-          <div className="mt-6 w-full max-w-lg">
+          <div className="mt-4 w-full max-w-lg">
             <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
               <div className="bg-black/60 backdrop-blur-3xl rounded-[22px] overflow-hidden">
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
@@ -982,49 +983,58 @@ export default function Play({
           </div>
         </div>
 
-        {/* RIGHT: Permanent Control + Playlist Panel */}
-        <div className="w-[360px] xl:w-[400px] h-full bg-black/60 backdrop-blur-[40px] border-l border-white/10 flex flex-col p-8 xl:p-10 overflow-hidden shrink-0">
-          {/* Panel Header */}
-          <div className="mb-8">
+        {/* RIGHT: Slide-in Sidebar (triggered by hamburger) with rounded left corners */}
+        {/* Desktop Overlay */}
+        <div
+          className={`fixed inset-0 bg-black/50 backdrop-blur-[2px] z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          onClick={() => setSidebarOpen(false)}
+        />
+        {/* Desktop Sidebar Panel */}
+        <div className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 h-full w-[380px] bg-[#0d0d0d]/95 backdrop-blur-[50px] z-[110] flex flex-col shadow-[-20px_0_80px_rgba(0,0,0,0.7)] border-l border-white/5 rounded-l-[2.5rem] overflow-hidden`}>
+          {/* Close Button */}
+          <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/5 shrink-0">
             <div className="flex w-full bg-white/5 p-1.5 rounded-2xl border border-white/10">
               <button onClick={() => setActiveTab('controls')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === 'controls' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}>Controls</button>
               <button onClick={() => setActiveTab('playlists')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === 'playlists' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}>Playlists</button>
             </div>
+            <button className="ml-4 p-2.5 hover:bg-white/10 rounded-full transition-all group shrink-0" onClick={() => setSidebarOpen(false)}>
+              <svg className="group-hover:rotate-90 transition-transform duration-500 text-white/40" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
           </div>
 
-          {/* Panel Content */}
+          {/* Scrollable Panel Content */}
           {activeTab === 'controls' ? (
-            <div className="flex flex-col flex-1 justify-between overflow-hidden">
-              <div>
-                <header className="mb-8 text-center">
-                  <h2 className="text-white font-light text-xl tracking-[0.3em] uppercase mb-2">Controls</h2>
-                  <div className="h-px w-12 bg-[#b88c5a] mx-auto rounded-full shadow-[0_0_12px_#b88c5a]" />
-                </header>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-8 w-full place-items-center px-4">
-                  {ControlsPanel}
-                </div>
+            <div className="flex flex-col flex-1 min-h-0 px-8 py-6">
+              <header className="mb-6 text-center">
+                <h2 className="text-white font-light text-xl tracking-[0.3em] uppercase mb-2">Controls</h2>
+                <div className="h-px w-12 bg-[#b88c5a] mx-auto rounded-full shadow-[0_0_12px_#b88c5a]" />
+              </header>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6 w-full place-items-center">
+                {ControlsPanel}
               </div>
-              <div className="mt-auto pt-6">
+              <div className="mt-auto pt-6 shrink-0">
                 <button 
                   className="flex items-center justify-center w-full h-14 rounded-2xl bg-[#b88c5a]/20 hover:bg-[#b88c5a]/30 focus:outline-none hover:scale-[1.02] active:scale-95 transition-all border border-[#b88c5a]/30 text-[#b88c5a] font-bold uppercase tracking-widest text-[10px]"
-                  onClick={() => setIsQueueOpen(true)}
+                  onClick={() => { setSidebarOpen(false); setTimeout(() => setIsQueueOpen(true), 300); }}
                 >
                   <div className="flex items-center gap-3">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     Open Song Queue
                   </div>
                 </button>
-                <p className="text-white/20 text-[9px] uppercase tracking-[0.3em] font-bold text-center mt-6">Pippofy Premium Audio</p>
+                <p className="text-white/20 text-[9px] uppercase tracking-[0.3em] font-bold text-center mt-5 pb-2">Pippofy Premium Audio</p>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col flex-1 overflow-hidden">
-              <header className="mb-6 text-center">
+            <div className="flex flex-col flex-1 min-h-0 px-8 py-6">
+              <header className="mb-6 text-center shrink-0">
                 <h2 className="text-white font-light text-xl tracking-[0.3em] uppercase mb-2">Playlists</h2>
                 <div className="h-px w-12 bg-[#b88c5a] mx-auto rounded-full shadow-[0_0_12px_#b88c5a]" />
               </header>
-              <div className="flex-1 overflow-y-auto scrollbar-hide">{PlaylistsView}</div>
-              <p className="text-white/20 text-[9px] uppercase tracking-[0.3em] font-bold text-center mt-4 pt-4 border-t border-white/5">Pippofy Premium Audio</p>
+              <div className="flex-1 overflow-y-auto scrollbar-hide min-h-0">{PlaylistsView}</div>
+              <p className="text-white/20 text-[9px] uppercase tracking-[0.3em] font-bold text-center mt-4 pt-4 border-t border-white/5 shrink-0">Pippofy Premium Audio</p>
             </div>
           )}
         </div>
