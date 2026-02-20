@@ -973,8 +973,8 @@ export default function Play({
             )}
           </div>
 
-          {/* Desktop Input — centered lower below the disk */}
-          <div className="mt-60 w-full max-w-lg">
+          {/* Desktop Input */}
+          <div className="mt-52 w-full max-w-lg">
             <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
               <div className="bg-black/60 backdrop-blur-3xl rounded-[22px] overflow-hidden">
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
