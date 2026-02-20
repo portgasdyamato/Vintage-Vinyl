@@ -10,7 +10,7 @@ export default function Tonearm({ isPlaying }) {
                 style={{
                     width: 'clamp(140px, 35vw, 350px)',
                     height: 'auto',
-                    transform: `rotate(${isPlaying ? '18deg' : '-65deg'})`,
+                    transform: `rotate(${isPlaying ? '18deg' : '-5deg'})`,
                     transformOrigin: '50% 15%', // Precision pivot
                     marginTop: '5%',
                     marginRight: '5%',

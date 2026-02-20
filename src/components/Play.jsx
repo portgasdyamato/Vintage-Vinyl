@@ -951,11 +951,11 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-24">
+          <div className="relative flex items-center justify-center w-full -mt-14">
             <div className="relative" style={{ width: 'min(52vh, 500px)', height: 'min(52vh, 500px)' }}>
               <Disk isPlaying={isPlaying} videoUrl={queue[currentVideoIndex]?.url || ''} onSeek={handleSeek} played={played} duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} />
               {/* Tonearm pushed further right so it clears the record when paused */}
-              <div className="absolute top-[-20%] right-[-60%] h-full w-full pointer-events-none">
+              <div className="absolute top-[-20%] right-[-75%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} />
               </div>
             </div>
