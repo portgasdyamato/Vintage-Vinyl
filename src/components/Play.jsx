@@ -853,10 +853,10 @@ export default function Play({
       {/* Sidebar for controls & Playlists - Unified Glassmorphism */}
       <>
         <div 
-          className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          className={`fixed inset-0 bg-black/40 lg:bg-black/10 backdrop-blur-sm lg:backdrop-blur-[2px] z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           onClick={() => setSidebarOpen(false)}
         />
-        <div className={`mobile-sidebar transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 h-full w-[280px] sm:w-[320px] bg-[#0a0a0a]/95 backdrop-blur-[40px] z-[110] p-5 sm:p-8 flex flex-col shadow-[-10px_0_60px_rgba(0,0,0,0.8)] border-l border-white/10`}>
+        <div className={`mobile-sidebar transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 lg:top-12 lg:right-12 h-full lg:h-[calc(100%-6rem)] w-[280px] sm:w-[320px] lg:w-[420px] bg-[#0a0a0a]/95 lg:bg-[#0a0a0a]/80 backdrop-blur-[40px] z-[110] p-5 sm:p-8 lg:p-12 flex flex-col shadow-[-10px_0_60px_rgba(0,0,0,0.8)] lg:shadow-[0_20px_80px_rgba(0,0,0,0.6)] border-l lg:border border-white/10 lg:rounded-[2.5rem]`}>
           <button className="self-end mb-4 p-3 hover:bg-white/10 rounded-full transition-all group" onClick={() => setSidebarOpen(false)}>
             <svg className="group-hover:rotate-90 transition-transform duration-500 text-white/50" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -865,7 +865,7 @@ export default function Play({
           </button>
           
           <div className={`flex flex-col items-center flex-1 w-full ${activeTab === 'controls' ? 'overflow-hidden justify-center' : 'overflow-y-auto scrollbar-hide'}`}>
-            <div className="flex w-full mb-8 bg-white/5 p-1 rounded-xl border border-white/10">
+            <div className="flex w-full mb-10 lg:mb-12 bg-white/5 p-1.5 rounded-2xl border border-white/10">
               <button 
                 onClick={() => setActiveTab('controls')}
                 className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${activeTab === 'controls' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40'}`}
@@ -882,11 +882,11 @@ export default function Play({
 
             {activeTab === 'controls' ? (
               <>
-                <header className="mb-6 text-center">
-                  <h2 className="text-white font-medium text-lg tracking-[0.2em] uppercase mb-1">Controls</h2>
-                  <div className="h-0.5 w-10 bg-[#b88c5a] mx-auto rounded-full shadow-[0_0_8px_#b88c5a]" />
+                <header className="mb-8 lg:mb-12 text-center">
+                  <h2 className="text-white font-medium text-lg lg:text-xl tracking-[0.3em] uppercase mb-1">Controls</h2>
+                  <div className="h-0.5 w-10 bg-[#b88c5a] mx-auto rounded-full shadow-[0_0_10px_#b88c5a]" />
                 </header>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-6 w-full place-items-center">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-10 w-full place-items-center lg:px-6">
                   {ControlsPanel}
                 </div>
 
@@ -970,8 +970,8 @@ export default function Play({
         )}
       </>
 
-      {/* Disk Section - Enlarged for Mobile Hero Presence */}
-      <div className={`flex-1 flex items-center justify-center w-full relative z-10 px-4 transition-all duration-1000 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100 blur-0'}`}>
+      {/* Disk Section - Unified Layout with Desktop Intelligence */}
+      <div className={`flex-1 flex items-center justify-center w-full relative z-10 px-4 transition-all duration-1000 ${sidebarOpen ? 'scale-90 lg:scale-100 lg:translate-x-[-15%] opacity-40 lg:opacity-100 blur-sm lg:blur-0' : 'scale-100 translate-x-0 opacity-100 blur-0'}`}>
         <div className="relative transform sm:scale-110 lg:scale-110">
           <Disk
             isPlaying={isPlaying}
