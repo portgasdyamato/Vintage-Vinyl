@@ -1508,8 +1508,8 @@ export default function Play({
 
         {/* Mobile: Centered Disk Hero with Speed & Skip Controls */}
         <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-10 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
-          <div className="relative mb-10 w-[270px] h-[270px] sm:w-[320px] sm:h-[320px] flex items-center justify-center transition-all duration-500">
-            <div className="w-full h-full shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-full">
+          <div className="relative mb-12 w-[80vw] h-[80vw] flex items-center justify-center transition-all duration-500">
+            <div className="w-full h-full shadow-[0_50px_120px_rgba(0,0,0,0.9)] rounded-full">
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1520,8 +1520,8 @@ export default function Play({
                 isLocal={isLocalSong}
               />
             </div>
-            {/* Precision mobile tonearm positioning */}
-            <div className="absolute top-[-25%] right-[-30%] h-full w-full pointer-events-none">
+            {/* Immersive mobile tonearm positioning - reaches perfect disc radius */}
+            <div className="absolute top-[-20%] right-[-25%] h-[110%] w-[110%] pointer-events-none">
               <Tonearm isPlaying={isPlaying} parkAngle="-5deg" playingAngle="18deg" />
             </div>
           </div>
