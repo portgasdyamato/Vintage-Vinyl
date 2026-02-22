@@ -164,6 +164,10 @@ export default function Play({
   const [currentAmbient, setCurrentAmbient] = useState('none');
   const [isAmbientMenuOpen, setIsAmbientMenuOpen] = useState(false);
   const ambientAudioRef = useRef(new Audio());
+  useEffect(() => {
+    ambientAudioRef.current.volume = 0.75;
+    ambientAudioRef.current.loop = true;
+  }, []);
   const ambientUnlocked = useRef(false);
   const pendingSeekRef = useRef(null); // Used to ensure seek happens onReady
 
@@ -199,28 +203,35 @@ export default function Play({
   }, []);
 
   const handleAmbientChange = (id) => {
+    if (id === currentAmbient && id !== 'none') {
+        setIsAmbientMenuOpen(false);
+        return;
+    }
+    
     setCurrentAmbient(id);
     setIsAmbientMenuOpen(false);
     
     const audio = ambientAudioRef.current;
     if (id === 'none') {
       audio.pause();
-      audio.currentTime = 0;
+      audio.src = '';
     } else if (ambientSounds[id]) {
       audio.pause();
       audio.src = ambientSounds[id];
       audio.load();
       audio.loop = true;
-      audio.volume = 0.95; // High volume for 100% certitude
+      audio.volume = 0.75; // Set to 75% as requested
       audio.muted = false;
       
-      // Critical Play Sequence
+      // Use a more resilient play sequence
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          console.error("Manual play failed:", error);
-          // Retry logic
-          setTimeout(() => audio.play(), 200);
+          console.warn("Ambient play deferred:", error);
+          // Only retry once to avoid potential loops if the audio engine is busy
+          setTimeout(() => {
+            if (audio.paused) audio.play().catch(() => {});
+          }, 500);
         });
       }
     }
@@ -1965,9 +1976,9 @@ export default function Play({
       {/* Dual Engine Playback */}
       {queue.length > 0 && (
         <>
-          {/* YouTube Engine */}
+          {/* YouTube Engine - Slightly visible to prevent background throttling */}
           {!isLocalSong && (
-            <div className="absolute top-0 left-0 w-10 h-10 opacity-[0.01] pointer-events-none -z-50 overflow-hidden">
+            <div className="absolute top-0 left-0 w-24 h-24 opacity-0 pointer-events-none -z-40 overflow-hidden">
               <ReactPlayer
                 ref={playerRef}
                 url={hasStartedInteractive ? currentSong?.url : ''}
@@ -1975,12 +1986,7 @@ export default function Play({
                 playbackRate={playbackRate}
                 progressInterval={1000}
                 onProgress={({ played: p }) => {
-                  // Throttle to avoid excessive re-renders that cause audio jitter
-                  const now = Date.now();
-                  if (now - lastProgressUpdate.current >= 1000) {
-                    lastProgressUpdate.current = now;
-                    setPlayed(p);
-                  }
+                  setPlayed(p);
                 }}
                 onReady={() => {
                   if (pendingSeekRef.current !== null) {
