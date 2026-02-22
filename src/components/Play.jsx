@@ -40,42 +40,82 @@ const sleepOptions = [
 
 const SleepDial = ({ onSelect, onClose, isDarkBg }) => {
   const scrollRef = useRef(null);
-  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const handleScroll = (e) => {
+    const container = e.target;
+    const itemHeight = 44; // match h-11
+    const index = Math.round(container.scrollTop / itemHeight);
+    if (index >= 0 && index < sleepOptions.length && index !== selectedIndex) {
+      setSelectedIndex(index);
+    }
+  };
+
+  useEffect(() => {
+    // Initial scroll to current selection if possible, otherwise start at 0
+    if (scrollRef.current) {
+        scrollRef.current.scrollTop = 0;
+    }
+  }, []);
+
   return (
     <motion.div 
-      initial={{ opacity: 0, scale: 0.9, y: -10 }}
+      initial={{ opacity: 0, scale: 0.9, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: -10 }}
-      className={`absolute top-full left-0 mt-3 rounded-[22px] py-3 px-2 z-[200] w-[100px] backdrop-blur-3xl ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_15px_40px_rgba(0,0,0,0.6)]'}`}
+      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+      className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 rounded-[32px] p-2 z-[200] w-[110px] backdrop-blur-3xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)]' : 'bg-white/80 border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.15)]'}`}
     >
-      <div className="relative h-40 w-full flex flex-col items-center overflow-hidden rounded-[16px]">
-        {/* Top/Bottom gradient masking */}
-        <div className={`absolute top-0 left-0 right-0 h-10 bg-gradient-to-b z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d]/90 to-transparent' : 'from-black/60 to-transparent'}`} />
-        <div className={`absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d]/90 to-transparent' : 'from-black/60 to-transparent'}`} />
+      <div className="relative h-[132px] w-full flex flex-col items-center overflow-hidden rounded-[24px]">
+        {/* Selection Highlight */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-11 border-y border-[#b88c5a]/30 pointer-events-none z-0" />
         
+        {/* Top/Bottom Fade */}
+        <div className={`absolute top-0 left-0 right-0 h-10 bg-gradient-to-b z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d] to-transparent' : 'from-white to-transparent'}`} />
+        <div className={`absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d] to-transparent' : 'from-white to-transparent'}`} />
 
         <div 
           ref={scrollRef}
-          className="w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide z-10 py-16"
+          onScroll={handleScroll}
+          className="w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide z-10 py-11"
         >
-          {sleepOptions.map((opt, i) => (
-            <div
-              key={i}
-              className="h-10 flex items-center justify-center snap-center cursor-pointer group"
-              onClick={() => onSelect(opt.value)}
-            >
-              <span className="text-[13px] font-black tracking-tighter text-white/20 group-hover:text-[#b88c5a] group-hover:scale-125 transition-all duration-300">
-                {opt.label}
-              </span>
-            </div>
-          ))}
+          {sleepOptions.map((opt, i) => {
+            const distance = Math.abs(i - selectedIndex);
+            const opacity = distance === 0 ? 1 : distance === 1 ? 0.4 : 0;
+            const scale = distance === 0 ? 1.2 : 0.85;
+            const rotateX = (i - selectedIndex) * 35; // Circular warp effect
+            const yOffset = (i - selectedIndex) * 5;
+
+            return (
+              <div
+                key={i}
+                className="h-11 flex items-center justify-center snap-center cursor-pointer"
+                onClick={() => onSelect(opt.value)}
+              >
+                <motion.span 
+                  animate={{ 
+                    opacity, 
+                    scale, 
+                    rotateX,
+                    y: yOffset,
+                    color: distance === 0 ? '#b88c5a' : (isDarkBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)')
+                  }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  className="text-[14px] font-black tracking-tighter uppercase"
+                >
+                  {opt.label}
+                </motion.span>
+              </div>
+            );
+          })}
         </div>
       </div>
       
-      {/* Indicator */}
-      <div className="mt-2 text-center text-[8px] font-black text-[#b88c5a]/40 uppercase tracking-widest">
-        Select
-      </div>
+      <button 
+        onClick={() => onSelect(sleepOptions[selectedIndex].value)}
+        className="w-full py-2 mt-2 text-center text-[9px] font-black text-[#b88c5a] uppercase tracking-[0.2em] hover:bg-[#b88c5a]/10 rounded-xl transition-all"
+      >
+        Set Timer
+      </button>
     </motion.div>
   );
 };
@@ -1587,8 +1627,8 @@ export default function Play({
                 duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
                 isLocal={isLocalSong}
               />
-              {/* Tonearm repositioned to be closer to the disc (moved left) */}
-              <div className="absolute top-[-25%] right-[-90%] h-full w-full pointer-events-none">
+              {/* Tonearm repositioned to be closer to the disc (moved more left) */}
+              <div className="absolute top-[-25%] right-[-65%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} parkAngle="0deg" />
               </div>
             </div>
