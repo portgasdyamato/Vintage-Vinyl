@@ -1269,7 +1269,7 @@ export default function Play({
   );
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-transparent">
+    <div className="relative h-full w-full overflow-hidden bg-transparent">
       <Toast 
         message={toastConfig?.message} 
         type={toastConfig?.type} 
@@ -1580,31 +1580,34 @@ export default function Play({
 
               <AnimatePresence>
                 {isAmbientMenuOpen && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
-                  >
-                    <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
-                    {[
-                      { id: 'none', label: 'Silence' },
-                      { id: 'rain', label: 'Rainfall' },
-                      { id: 'white', label: 'White Noise' },
-                      { id: 'forest', label: 'Forest' }
-                    ].map((sound) => (
-                      <button
-                        key={sound.id}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? (sound.id === 'none' ? 'bg-white/10 border-white/20 text-white font-black' : 'bg-white/5 border-[#b88c5a]/30 text-[#b88c5a] font-black shadow-[0_0_15px_rgba(184,140,90,0.1)]') : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
-                        onClick={() => handleAmbientChange(sound.id)}
-                      >
-                        <span className="text-[10px] uppercase font-bold tracking-[0.15em]">{sound.label}</span>
-                        {currentAmbient === sound.id && (
-                          <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] ${sound.id === 'none' ? 'bg-white' : 'bg-[#b88c5a]'}`} />
-                        )}
-                      </button>
-                    ))}
-                  </motion.div>
+                  <>
+                    <div className="fixed inset-0 z-[190]" onClick={() => setIsAmbientMenuOpen(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
+                    >
+                      <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
+                      {[
+                        { id: 'none', label: 'Silence' },
+                        { id: 'rain', label: 'Rainfall' },
+                        { id: 'white', label: 'White Noise' },
+                        { id: 'forest', label: 'Forest' }
+                      ].map((sound) => (
+                        <button
+                          key={sound.id}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? (sound.id === 'none' ? 'bg-white/10 border-white/20 text-white font-black' : 'bg-white/5 border-[#b88c5a]/30 text-[#b88c5a] font-black shadow-[0_0_15px_rgba(184,140,90,0.1)]') : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
+                          onClick={() => handleAmbientChange(sound.id)}
+                        >
+                          <span className="text-[10px] uppercase font-bold tracking-[0.15em]">{sound.label}</span>
+                          {currentAmbient === sound.id && (
+                            <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] ${sound.id === 'none' ? 'bg-white' : 'bg-[#b88c5a]'}`} />
+                          )}
+                        </button>
+                      ))}
+                    </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>
