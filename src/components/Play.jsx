@@ -97,7 +97,7 @@ const SleepDial = ({ onSelect, onClose, isDarkBg }) => {
                     scale, 
                     rotateX,
                     y: yOffset,
-                    color: distance === 0 ? '#b88c5a' : 'rgba(255,255,255,0.3)'
+                    color: distance === 0 ? '#ffffff' : 'rgba(255,255,255,0.3)'
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   className="text-[14px] font-black tracking-tighter uppercase"
@@ -112,7 +112,7 @@ const SleepDial = ({ onSelect, onClose, isDarkBg }) => {
       
       <button 
         onClick={() => onSelect(sleepOptions[selectedIndex].value)}
-        className="w-full py-2 mt-2 text-center text-[9px] font-black text-[#b88c5a] uppercase tracking-[0.2em] hover:bg-[#b88c5a]/10 rounded-xl transition-all"
+        className="w-full py-2 mt-2 text-center text-[9px] font-black text-white/40 uppercase tracking-[0.2em] hover:bg-white/5 hover:text-white/60 rounded-xl transition-all"
       >
         Set Timer
       </button>
@@ -1739,7 +1739,7 @@ export default function Play({
           onClick={() => setSidebarOpen(false)}
         />
         {/* Desktop Sidebar Panel */}
-        <div className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 h-full w-[380px] z-[110] flex flex-col rounded-l-[2.5rem] overflow-hidden bg-[#0d0d0d]/98 backdrop-blur-3xl shadow-[-40px_0_100px_rgba(0,0,0,0.95)] border-l border-white/10`}>
+        <div className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0 shadow-[-40px_0_100px_rgba(0,0,0,0.95)]' : 'translate-x-full shadow-none'} fixed top-0 right-0 h-full w-[380px] z-[110] flex flex-col rounded-l-[2.5rem] overflow-hidden bg-[#0d0d0d]/98 backdrop-blur-3xl border-l border-white/10`}>
           {/* Close Button & Sleep Timer */}
           <div className="flex flex-col px-8 pt-8 pb-6 border-b border-white/5 shrink-0">
             {/* Row 1: Action Icons (Top Row like Android) */}
@@ -1771,11 +1771,14 @@ export default function Play({
 
                   <AnimatePresence>
                     {showSleepDial && (
-                      <SleepDial 
-                        onSelect={(val) => { setSleepTime(val); setShowSleepDial(false); }} 
-                        onClose={() => setShowSleepDial(false)} 
-                        isDarkBg={isDarkBg}
-                      />
+                      <>
+                        <div className="fixed inset-0 z-[190]" onClick={() => setShowSleepDial(false)} />
+                        <SleepDial 
+                          onSelect={(val) => { setSleepTime(val); setShowSleepDial(false); }} 
+                          onClose={() => setShowSleepDial(false)} 
+                          isDarkBg={isDarkBg}
+                        />
+                      </>
                     )}
                   </AnimatePresence>
                 </div>
