@@ -1,0 +1,31 @@
+
+> vinyl@0.0.0 build
+> vite build
+
+[36mvite v6.3.3 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 17 modules transformed.
+[31m✗[39m Build failed in 508ms
+[31merror during build:
+[31m[vite:esbuild] Transform failed with 1 error:
+C:/Users/HP/OneDrive/Desktop/appx/vinyl/vinyl/src/components/Play.jsx:585:8: ERROR: The symbol "toggleFavorite" has already been declared[31m
+file: [36mC:/Users/HP/OneDrive/Desktop/appx/vinyl/vinyl/src/components/Play.jsx:585:8[31m
+[33m
+[33mThe symbol "toggleFavorite" has already been declared[33m
+583|    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 600;
+584|  
+585|    const toggleFavorite = (item) => {
+   |          ^
+586|      const isFav = favorites.some(f => f.url === item.url);
+587|      if (isFav) {
+[31m
+    at failureErrorWithLog (C:\Users\HP\OneDrive\Desktop\appx\vinyl\vinyl\node_modules\esbuild\lib\main.js:1477:15)
+    at C:\Users\HP\OneDrive\Desktop\appx\vinyl\vinyl\node_modules\esbuild\lib\main.js:756:50
+    at responseCallbacks.<computed> (C:\Users\HP\OneDrive\Desktop\appx\vinyl\vinyl\node_modules\esbuild\lib\main.js:623:9)
+    at handleIncomingPacket (C:\Users\HP\OneDrive\Desktop\appx\vinyl\vinyl\node_modules\esbuild\lib\main.js:678:12)
+    at Socket.readFromStdout (C:\Users\HP\OneDrive\Desktop\appx\vinyl\vinyl\node_modules\esbuild\lib\main.js:601:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)[39m

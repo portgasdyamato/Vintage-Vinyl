@@ -49,16 +49,32 @@ body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
-  background: #000; /* Prevent startup flicker */
+  background: #000;
 }
 
-.background-video {
+.video-layer-light,
+.video-layer-dark {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.8; /* Slight darkening for better contrast */
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  pointer-events: none;
+}
+
+/* 200% Intact Background Switch Logic via CSS Selectors (Zero-Logic Latency) */
+[data-theme='light'] .video-layer-light {
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+[data-theme='dark'] .video-layer-dark {
+  opacity: 1 !important;
+  pointer-events: auto;
 }
 
 @import "tailwindcss";

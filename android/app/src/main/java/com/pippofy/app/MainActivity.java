@@ -11,14 +11,6 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        // Request Audio Focus natively to trick Android into seeing us as a Music App
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        if (audioManager != null) {
-            audioManager.requestAudioFocus(focusRequest -> {}, 
-                AudioManager.STREAM_MUSIC, 
-                AudioManager.AUDIOFOCUS_GAIN);
-        }
     }
 
     @Override

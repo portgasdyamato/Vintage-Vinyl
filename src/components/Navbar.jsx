@@ -1,23 +1,29 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import pippofy from '../assets/pippofy.png';
 import menu from '../assets/menu.png';
 import Play from './Play';
 import AnimatedList from './Queue';
 import { Preferences } from '@capacitor/preferences';
 
-export default function Navbar() {
+export default function Navbar({ isDarkBg, setIsDarkBg }) {
   const [isQueueOpen, setIsQueueOpen] = useState(false);
   const listRef = useRef(null);
   const [isMenuClicked, setIsMenuClicked] = useState(false);
-  const [queue, setQueue] = useState([]); // State for the queue
-  const [favorites, setFavorites] = useState([]); // State for favorites
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0); // Track the current video index
-  const [isPlaying, setIsPlaying] = useState(false); // Track playback state
-  const [played, setPlayed] = useState(0); // Track the progress of the song (0 to 1)
-  const [playlists, setPlaylists] = useState([]); // State for user playlists
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
+  const [queue, setQueue] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [playlists, setPlaylists] = useState([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [autoBookmark, setAutoBookmark] = useState(false); // Timestamp resume feature
 
-  // Load favorites on mount
+  // Sync favorites, playlists, queue remaining unchanged...
+
+
+
+  // Sync favorites, playlists, queue
   useEffect(() => {
     const loadFavorites = async () => {
       const { value } = await Preferences.get({ key: 'favorites' });
@@ -34,6 +40,24 @@ export default function Navbar() {
       }
     };
     loadPlaylists();
+
+    const loadQueueState = async () => {
+      const { value: savedQueue } = await Preferences.get({ key: 'queue' });
+      if (savedQueue) {
+        try { setQueue(JSON.parse(savedQueue)); } catch(e) {}
+      }
+      const { value: savedIndex } = await Preferences.get({ key: 'currentVideoIndex' });
+      if (savedIndex !== null && savedIndex !== undefined) {
+        setCurrentVideoIndex(Number(savedIndex));
+      }
+    };
+    loadQueueState();
+
+    const loadAutoBookmark = async () => {
+      const { value } = await Preferences.get({ key: 'autoBookmark' });
+      if (value !== null) setAutoBookmark(value === 'true');
+    };
+    loadAutoBookmark();
   }, []);
 
   // Save favorites when updated
@@ -58,6 +82,34 @@ export default function Navbar() {
     savePlaylists();
   }, [playlists]);
 
+  // Save queue when updated
+  useEffect(() => {
+    const saveQueue = async () => {
+      await Preferences.set({
+        key: 'queue',
+        value: JSON.stringify(queue),
+      });
+    };
+    saveQueue();
+  }, [queue]);
+
+  // Save currentVideoIndex when updated
+  useEffect(() => {
+    const saveIndex = async () => {
+      await Preferences.set({
+        key: 'currentVideoIndex',
+        value: currentVideoIndex.toString(),
+      });
+    };
+    saveIndex();
+  }, [currentVideoIndex]);
+
+  // Persist autoBookmark setting
+  useEffect(() => {
+    Preferences.set({ key: 'autoBookmark', value: autoBookmark.toString() });
+  }, [autoBookmark]);
+
+
   useEffect(() => {
     if (!isQueueOpen) return;
     function handleClickOutside(event) {
@@ -79,21 +131,32 @@ export default function Navbar() {
 
   const handleItemSelect = (item, tab, index) => {
     if (tab === 'favorites') {
-      const existingIndex = queue.findIndex(q => q.url === item.url);
-      if (existingIndex !== -1) {
-        setCurrentVideoIndex(existingIndex);
-      } else {
-        // Atomic update: calculate new index based on previous queue
-        setQueue(prev => {
-          const newQueue = [...prev, item];
-          setCurrentVideoIndex(newQueue.length - 1);
-          return newQueue;
-        });
-      }
+      setQueue((prevQueue) => {
+        const existingIndex = prevQueue.findIndex(q => q.url === item.url);
+        if (existingIndex !== -1) {
+          setTimeout(() => {
+            setCurrentVideoIndex(existingIndex);
+            setIsPlaying(true);
+          }, 0);
+          return prevQueue;
+        } else {
+          setTimeout(() => {
+            setCurrentVideoIndex(prevQueue.length);
+            setIsPlaying(true);
+          }, 0);
+          return [...prevQueue, item];
+        }
+      });
     } else {
       setCurrentVideoIndex(index);
+      setIsPlaying(true);
     }
-    setIsPlaying(true);
+  };
+
+  const handleClearQueue = () => {
+    setQueue([]);
+    setIsPlaying(false);
+    setCurrentVideoIndex(0);
   };
 
   const handleRemove = (index) => {
@@ -114,25 +177,51 @@ export default function Navbar() {
     <>
       <nav className="fixed top-0 left-0 w-full z-50 pt-8 pointer-events-none">
         <div className="container mx-auto px-6 flex justify-between items-center pointer-events-auto">
-          <div className="flex items-center gap-2 cursor-pointer transition-all duration-300 hover:opacity-80">
+          <div className="flex items-center cursor-pointer transition-all duration-500 hover:scale-110 active:scale-95">
             <img
               src={pippofy}
-              alt="Pippofy"
-              className="h-10 w-auto sm:h-12"
+              alt="Logo"
+              className="h-14 w-auto sm:h-16 transition-all duration-700 filter drop-shadow-[0_0_15px_rgba(184,140,90,0.3)]"
             />
-            <span className="text-white text-lg sm:text-2xl font-serif font-bold tracking-[0.1em] uppercase leading-none">Pippofy</span>
           </div>
 
-          <button 
-            className="w-10 h-10 bg-white/10 backdrop-blur-md border border-white/10 rounded-xl flex items-center justify-center shadow-xl active:scale-90 transition-all duration-300"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </button>
+          <div className="flex gap-4">
+            <button 
+              className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur-3xl active:scale-90 transition-all duration-300 pointer-events-auto border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] hover:bg-white/10'}`}
+              onClick={() => setIsDarkBg(!isDarkBg)}
+              title="Toggle Background"
+            >
+              {isDarkBg ? (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              ) : (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              )}
+            </button>
+
+
+            <button 
+              className={`w-10 h-10 flex items-center justify-center rounded-xl backdrop-blur-3xl active:scale-90 transition-all duration-300 pointer-events-auto border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] hover:bg-white/10'}`}
+              onClick={() => setSidebarOpen(true)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white/80">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -146,6 +235,9 @@ export default function Navbar() {
             currentVideoIndex={currentVideoIndex}
             progress={played}
             setFavorites={setFavorites}
+            handleClearQueue={handleClearQueue}
+            playlists={playlists}
+            setPlaylists={setPlaylists}
           />
         </div>
       )}
@@ -167,6 +259,11 @@ export default function Navbar() {
         setPlaylists={setPlaylists}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        handleClearQueue={handleClearQueue}
+        isDarkBg={isDarkBg}
+        setIsDarkBg={setIsDarkBg}
+        autoBookmark={autoBookmark}
+        setAutoBookmark={setAutoBookmark}
       />
     </>
   );

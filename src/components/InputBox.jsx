@@ -15,7 +15,7 @@ export default function InputBox({ newVideoLink, setNewVideoLink, onAdd }) {
         value={newVideoLink}
         onChange={(e) => setNewVideoLink(e.target.value)}
         onKeyDown={handleKeyPress}
-        className="w-full bg-black/40 border border-white/10 text-white placeholder:text-white/30 rounded-full py-4 px-6 focus:outline-none focus:ring-2 focus:ring-[#b88c5a]/50 backdrop-blur-md transition-all duration-300 text-sm sm:text-base"
+        className="w-full bg-transparent text-white placeholder:text-white/30 rounded-full py-4 px-6 focus:outline-none focus:bg-white/5 transition-all duration-300 text-sm sm:text-base"
       />
     </div>
   );
