@@ -7,6 +7,11 @@ import InputBox from './InputBox';
 import Disk from './Disk';
 import Toast from './Toast';
 
+// Atmosphere Audio Assets
+import forestAudio from '../assets/forest.mp3';
+import rainfallAudio from '../assets/rainfall.mp3';
+import whiteNoiseAudio from '../assets/white noise.mp3';
+
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';
 import { Capacitor } from '@capacitor/core';
@@ -164,9 +169,9 @@ export default function Play({
 
   const ambientSounds = {
     none: null,
-    rain: 'https://www.soundjay.com/nature/rain-03.mp3',
-    white: 'https://www.soundjay.com/misc/white-noise-01.mp3',
-    forest: 'https://www.soundjay.com/nature/forest-birds-01.mp3',
+    rain: rainfallAudio,
+    white: whiteNoiseAudio,
+    forest: forestAudio,
   };
 
   // 100% Native-Audio Unlocker: Unlocking the AudioContext on first touch
