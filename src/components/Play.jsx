@@ -63,15 +63,15 @@ const SleepDial = ({ onSelect, onClose, isDarkBg }) => {
       initial={{ opacity: 0, scale: 0.9, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: 10 }}
-      className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 rounded-[32px] p-2 z-[200] w-[110px] backdrop-blur-3xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)]' : 'bg-white/80 border-black/5 shadow-[0_20px_60px_rgba(0,0,0,0.15)]'}`}
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-4 rounded-3xl p-2 z-[200] w-[110px] backdrop-blur-3xl border bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)]"
     >
-      <div className="relative h-[132px] w-full flex flex-col items-center overflow-hidden rounded-[24px]">
+      <div className="relative h-[132px] w-full flex flex-col items-center overflow-hidden rounded-2xl">
         {/* Selection Highlight */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-11 border-y border-[#b88c5a]/30 pointer-events-none z-0" />
         
         {/* Top/Bottom Fade */}
-        <div className={`absolute top-0 left-0 right-0 h-10 bg-gradient-to-b z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d] to-transparent' : 'from-white to-transparent'}`} />
-        <div className={`absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t z-20 pointer-events-none ${isDarkBg ? 'from-[#0d0d0d] to-transparent' : 'from-white to-transparent'}`} />
+        <div className="absolute top-0 left-0 right-0 h-10 bg-gradient-to-b z-20 pointer-events-none from-[#0d0d0d] to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t z-20 pointer-events-none from-[#0d0d0d] to-transparent" />
 
         <div 
           ref={scrollRef}
@@ -97,7 +97,7 @@ const SleepDial = ({ onSelect, onClose, isDarkBg }) => {
                     scale, 
                     rotateX,
                     y: yOffset,
-                    color: distance === 0 ? '#b88c5a' : (isDarkBg ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)')
+                    color: distance === 0 ? '#b88c5a' : 'rgba(255,255,255,0.3)'
                   }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   className="text-[14px] font-black tracking-tighter uppercase"
@@ -1628,7 +1628,7 @@ export default function Play({
                 isLocal={isLocalSong}
               />
               {/* Tonearm repositioned to be closer to the disc (moved more left) */}
-              <div className="absolute top-[-25%] right-[-65%] h-full w-full pointer-events-none">
+              <div className="absolute top-[-25%] right-[-45%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} parkAngle="0deg" />
               </div>
             </div>
