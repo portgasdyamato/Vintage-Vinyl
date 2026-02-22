@@ -1637,8 +1637,8 @@ export default function Play({
         {/* LEFT: Main Hero Area - Vinyl + Tonearm centered */}
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
-          {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-20">
+          {/* Vinyl + Tonearm Hero - Lowered to prevent cutoff at top */}
+          <div className="relative flex items-center justify-center w-full mt-12 mb-8">
             <div className="relative" style={{ width: 'min(80vh, 740px)', height: 'min(80vh, 740px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
@@ -1744,10 +1744,10 @@ export default function Play({
             </div>
           </div>
 
-          {/* Desktop Input */}
-          <div className="mt-4 w-full max-w-lg">
-            <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
-              <div className={`backdrop-blur-3xl rounded-[22px] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}>
+          {/* Desktop Input - Lowered and Shadows Removed */}
+          <div className="mt-16 w-full max-w-lg">
+            <div className="p-[2px] rounded-3xl bg-white/10 shadow-none">
+              <div className={`backdrop-blur-3xl rounded-[22px] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/5' : 'bg-black/30 border border-white/10'} shadow-none`}>
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
               </div>
             </div>
