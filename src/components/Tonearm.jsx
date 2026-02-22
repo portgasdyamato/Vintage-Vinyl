@@ -10,7 +10,7 @@ export default function Tonearm({ isPlaying, parkAngle = '-10deg' }) {
                 style={{
                     width: 'clamp(140px, 35vw, 350px)',
                     height: 'auto',
-                    transform: `rotate(${isPlaying ? '25deg' : parkAngle})`,
+                    transform: `rotate(${isPlaying ? '35deg' : parkAngle})`,
                     transformOrigin: '50% 15%', // Precision pivot
                     marginTop: '5%',
                     marginRight: '5%',
