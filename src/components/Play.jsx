@@ -1331,7 +1331,7 @@ export default function Play({
       {/* =========================================================
           MOBILE LAYOUT (hidden on lg+): Original perfect layout
       ========================================================= */}
-      <div className="flex lg:hidden flex-col items-center justify-center h-full w-full pt-16 pb-20 overflow-hidden">
+      <div className="flex lg:hidden flex-col items-center justify-center h-full w-full pt-20 pb-12 overflow-hidden relative">
         {/* Mobile Sidebar Overlay */}
         <div 
           className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -1508,17 +1508,19 @@ export default function Play({
 
         {/* Mobile: Centered Disk Hero with Speed & Skip Controls */}
         <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-10 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
-          <div className="relative transform sm:scale-110 mb-2">
-            <Disk 
-              isPlaying={isPlaying} 
-              videoUrl={queue[currentVideoIndex]?.url || ''} 
-              onSeek={handleSeek} 
-              onScratch={handleScratch}
-              played={played} 
-              duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
-              isLocal={isLocalSong}
-            />
-            <div className="absolute top-[-20%] right-[-25%] sm:right-[-45%] h-full w-full pointer-events-none">
+          <div className="relative mb-8 w-[80vw] max-w-[340px] aspect-square flex items-center justify-center">
+            <div className="w-full h-full">
+              <Disk 
+                isPlaying={isPlaying} 
+                videoUrl={queue[currentVideoIndex]?.url || ''} 
+                onSeek={handleSeek} 
+                onScratch={handleScratch}
+                played={played} 
+                duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
+                isLocal={isLocalSong}
+              />
+            </div>
+            <div className="absolute top-[-15%] right-[-20%] h-full w-full pointer-events-none">
               <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
             </div>
           </div>
