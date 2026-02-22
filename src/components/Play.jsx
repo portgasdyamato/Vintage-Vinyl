@@ -1587,8 +1587,8 @@ export default function Play({
                 duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
                 isLocal={isLocalSong}
               />
-              {/* Tonearm repositioned for perfect park (beside) and play (on disc) states */}
-              <div className="absolute top-[-25%] right-[-105%] h-full w-full pointer-events-none">
+              {/* Tonearm repositioned to be closer to the disc (moved left) */}
+              <div className="absolute top-[-25%] right-[-90%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} parkAngle="0deg" />
               </div>
             </div>
@@ -1638,12 +1638,12 @@ export default function Play({
             {/* Atmosphere Control (Desktop Home) */}
             <div className="relative pointer-events-auto">
               <button 
-                className={`flex items-center justify-center w-14 h-14 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+                className={`flex items-center justify-center w-14 h-14 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-300 border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
                 onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
                 title="Atmosphere"
               >
                 <div className="relative">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/30'}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/80'}>
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                     <line x1="12" y1="19" x2="12" y2="23"></line>
