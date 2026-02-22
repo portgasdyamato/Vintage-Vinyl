@@ -1577,7 +1577,7 @@ export default function Play({
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
           <div className="relative flex items-center justify-center w-full -mt-20">
-            <div className="relative" style={{ width: 'min(58vh, 520px)', height: 'min(58vh, 520px)' }}>
+            <div className="relative" style={{ width: 'min(72vh, 670px)', height: 'min(72vh, 670px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1707,7 +1707,7 @@ export default function Play({
                 {/* Sleep Timer */}
                 <div className="relative">
                   <button 
-                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl transition-all duration-700 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] border backdrop-blur-3xl ${sleepTime ? (isDarkBg ? 'bg-[#0d0d0d]/98 border-[#b88c5a]/40 text-[#b88c5a]' : 'bg-black/40 border-[#b88c5a]/40 text-[#b88c5a]') : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/5 border-black/10 text-black/20 hover:bg-black/10 hover:text-black/50')}`}
+                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl transition-all duration-700 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] border backdrop-blur-3xl ${sleepTime ? (isDarkBg ? 'bg-[#0d0d0d]/98 border-[#b88c5a]/40 text-[#b88c5a]' : 'bg-black/20 border-[#b88c5a]/60 text-[#b88c5a]') : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10 hover:text-white/60'}`}
                     onClick={() => setShowSleepDial(!showSleepDial)}
                   >
                     <div className="relative flex items-center justify-center text-current">
@@ -1722,7 +1722,7 @@ export default function Play({
                     </div>
                     <div className="flex flex-col items-start gap-0">
                       {sleepTime && <span className="text-[7px] font-black uppercase tracking-tighter text-[#b88c5a] opacity-60 mb-[-2px]">Active</span>}
-                      <span className={`text-[11px] font-black uppercase tracking-[0.3em] transition-colors duration-700 ${sleepTime ? 'text-[#b88c5a]' : (isDarkBg ? 'text-white/40' : 'text-black/40')}`}>
+                      <span className={`text-[11px] font-black uppercase tracking-[0.3em] transition-colors duration-700 ${sleepTime ? 'text-[#b88c5a]' : 'text-white/30'}`}>
                         {sleepTime ? formatSleepTime(sleepTime) : "Timer"}
                       </span>
                     </div>
@@ -1730,7 +1730,7 @@ export default function Play({
 
                   <AnimatePresence>
                     {showSleepDial && (
-                      <div className="absolute top-full right-0 w-64 translate-x-12">
+                      <div className="absolute top-full right-0 w-64 translate-x-0">
                         <SleepDial 
                           onSelect={(val) => { setSleepTime(val); setShowSleepDial(false); }} 
                           onClose={() => setShowSleepDial(false)} 
@@ -1748,7 +1748,7 @@ export default function Play({
                   className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 active:scale-95 border backdrop-blur-3xl ${
                     activeTab === 'settings'
                       ? (isDarkBg ? 'bg-white/10 border-white/20 text-white shadow-[0_10px_30px_rgba(0,0,0,0.5)]' : 'bg-[#b88c5a]/10 border-[#b88c5a]/30 text-[#b88c5a]')
-                      : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/5 border-black/10 text-black/20 hover:bg-black/10 hover:text-black/50')
+                      : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10 hover:text-white/60'
                   }`}
                 >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1757,8 +1757,8 @@ export default function Play({
                 </button>
               </div>
 
-              <button className={`p-3 rounded-[18px] transition-all group shrink-0 ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 hover:bg-white/5' : 'bg-black/5 border border-black/10 hover:bg-black/10'}`} onClick={() => setSidebarOpen(false)}>
-                <svg className={`group-hover:rotate-90 transition-transform duration-500 ${isDarkBg ? 'text-white/30' : 'text-black/30'}`} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <button className={`p-3 rounded-[18px] transition-all group shrink-0 bg-white/5 border border-white/10 hover:bg-white/10`} onClick={() => setSidebarOpen(false)}>
+                <svg className={`group-hover:rotate-90 transition-transform duration-500 text-white/30`} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
               </button>
