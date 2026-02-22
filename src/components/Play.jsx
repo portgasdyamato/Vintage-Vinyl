@@ -1519,7 +1519,7 @@ export default function Play({
               isLocal={isLocalSong}
             />
             <div className="absolute top-[-20%] right-[-25%] sm:right-[-45%] h-full w-full pointer-events-none">
-              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="22deg" />
+              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
             </div>
           </div>
           
