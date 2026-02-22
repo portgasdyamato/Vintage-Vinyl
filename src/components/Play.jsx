@@ -1576,8 +1576,8 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-12">
-            <div className="relative" style={{ width: 'min(62vh, 580px)', height: 'min(62vh, 580px)' }}>
+          <div className="relative flex items-center justify-center w-full -mt-16">
+            <div className="relative" style={{ width: 'min(68vh, 620px)', height: 'min(68vh, 620px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1587,8 +1587,8 @@ export default function Play({
                 duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
                 isLocal={isLocalSong}
               />
-              {/* Tonearm pushed further right so it clears the record when paused */}
-              <div className="absolute top-[-20%] right-[-105%] h-full w-full pointer-events-none">
+              {/* Tonearm moved slightly left so it sits on the disc */}
+              <div className="absolute top-[-20%] right-[-85%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} parkAngle="5deg" />
               </div>
             </div>
@@ -1604,81 +1604,82 @@ export default function Play({
             ) : null}
           </div>
           
-          {/* Desktop Speed & Skip Controls */}
-          <div className="flex items-center justify-center gap-6 mt-6 mb-4 z-30 opacity-90 transition-opacity">
-            <button 
-              onClick={handleSkipBackward} 
-              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
-              title="Rewind 10s"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:-rotate-12 transition-transform duration-300">
-                <path d="M12 5v0a9 9 0 1 1 -9 9" />
-                <polygon points="12,1 7,5 12,9" fill="currentColor" strokeWidth="1" />
-                <polygon points="17,1 12,5 17,9" fill="currentColor" strokeWidth="1" />
-                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
-              </svg>
-            </button>
-
-            <button 
-              onClick={handleSkipForward} 
-              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
-              title="Skip 10s"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:rotate-12 transition-transform duration-300">
-                <path d="M12 5v0a9 9 0 1 0 9 9" />
-                <polygon points="12,1 17,5 12,9" fill="currentColor" strokeWidth="1" />
-                <polygon points="7,1 12,5 7,9" fill="currentColor" strokeWidth="1" />
-                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
-              </svg>
-            </button>
-          </div>
-
-          {/* Atmosphere Control (Desktop Home) - Moved Below */}
-          <div className="relative mt-3 mb-4 pointer-events-auto">
-            <button 
-              className={`flex items-center justify-center gap-4 w-[240px] px-8 py-3.5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
-              onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
-            >
-              <div className="relative">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/30'}>
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                  <line x1="12" y1="19" x2="12" y2="23"></line>
+          {/* Desktop Left-Side Controls Cluster */}
+          <div className="absolute left-16 top-1/2 -translate-y-1/2 flex flex-col gap-8 z-40 items-center">
+            {/* Desktop Speed & Skip Controls */}
+            <div className="flex flex-col items-center gap-6 opacity-90 transition-opacity">
+              <button 
+                onClick={handleSkipBackward} 
+                className={`group flex items-center justify-center w-14 h-14 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-2xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+                title="Rewind 10s"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:-rotate-12 transition-transform duration-300">
+                  <path d="M12 5v0a9 9 0 1 1 -9 9" />
+                  <polygon points="12,1 7,5 12,9" fill="currentColor" strokeWidth="1" />
+                  <polygon points="17,1 12,5 17,9" fill="currentColor" strokeWidth="1" />
+                  <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
                 </svg>
-                {currentAmbient !== 'none' && <span className="absolute -top-1 -right-1 flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-[#b88c5a]"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-[#b88c5a]"></span></span>}
-              </div>
-              <span className={`text-[12px] font-black uppercase tracking-[0.3em] ${currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/30'}`}>
-                {currentAmbient === 'none' ? 'Atmosphere' : currentAmbient}
-              </span>
-            </button>
+              </button>
 
-            <AnimatePresence>
-              {isAmbientMenuOpen && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                  className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-10 w-52 backdrop-blur-3xl rounded-[36px] p-2.5 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#111]/98 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]'}`}
-                >
-                  <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 px-4 py-4 border-b border-white/5 mb-2">Atmosphere</p>
-                  {[
-                    { id: 'none', label: 'Silence' },
-                    { id: 'rain', label: 'Rainfall' },
-                    { id: 'white', label: 'White Noise' },
-                    { id: 'forest', label: 'Forest' }
-                  ].map((sound) => (
-                    <button
-                      key={sound.id}
-                      className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all border ${currentAmbient === sound.id ? 'bg-[#b88c5a] border-[#b88c5a] text-white shadow-xl scale-[1.02]' : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
-                      onClick={() => handleAmbientChange(sound.id)}
-                    >
-                      <span className="text-[11px] uppercase font-bold tracking-[0.2em]">{sound.label}</span>
-                      {currentAmbient === sound.id && <div className="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_10px_currentColor] bg-white" />}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+              <button 
+                onClick={handleSkipForward} 
+                className={`group flex items-center justify-center w-14 h-14 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-2xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+                title="Skip 10s"
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:rotate-12 transition-transform duration-300">
+                  <path d="M12 5v0a9 9 0 1 0 9 9" />
+                  <polygon points="12,1 17,5 12,9" fill="currentColor" strokeWidth="1" />
+                  <polygon points="7,1 12,5 7,9" fill="currentColor" strokeWidth="1" />
+                  <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
+                </svg>
+              </button>
+            </div>
+
+            {/* Atmosphere Control (Desktop Home) */}
+            <div className="relative pointer-events-auto">
+              <button 
+                className={`flex items-center justify-center w-14 h-14 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+                onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
+                title="Atmosphere"
+              >
+                <div className="relative">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/30'}>
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                  </svg>
+                  {currentAmbient !== 'none' && <span className="absolute -top-1 -right-1 flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-[#b88c5a]"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-[#b88c5a]"></span></span>}
+                </div>
+              </button>
+
+              <AnimatePresence>
+                {isAmbientMenuOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -20, scale: 0.95 }}
+                    className={`absolute left-full top-0 ml-6 w-52 backdrop-blur-3xl rounded-[36px] p-2.5 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#111]/98 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_30px_80px_rgba(0,0,0,0.8)]'}`}
+                  >
+                    <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20 px-4 py-4 border-b border-white/5 mb-2">Atmosphere</p>
+                    {[
+                      { id: 'none', label: 'Silence' },
+                      { id: 'rain', label: 'Rainfall' },
+                      { id: 'white', label: 'White Noise' },
+                      { id: 'forest', label: 'Forest' }
+                    ].map((sound) => (
+                      <button
+                        key={sound.id}
+                        className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all border ${currentAmbient === sound.id ? 'bg-[#b88c5a] border-[#b88c5a] text-white shadow-xl scale-[1.02]' : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
+                        onClick={() => handleAmbientChange(sound.id)}
+                      >
+                        <span className="text-[11px] uppercase font-bold tracking-[0.2em]">{sound.label}</span>
+                        {currentAmbient === sound.id && <div className="w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_10px_currentColor] bg-white" />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Desktop Input */}
