@@ -1269,7 +1269,7 @@ export default function Play({
   );
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-transparent">
+    <div className="relative h-screen w-full overflow-hidden bg-transparent">
       <Toast 
         message={toastConfig?.message} 
         type={toastConfig?.type} 
@@ -1331,7 +1331,7 @@ export default function Play({
       {/* =========================================================
           MOBILE LAYOUT (hidden on lg+): Original perfect layout
       ========================================================= */}
-      <div className="flex lg:hidden flex-col items-center justify-between h-full w-full pt-24 pb-12 overflow-hidden relative">
+      <div className="flex lg:hidden flex-col items-center justify-center h-full w-full pt-16 pb-20 overflow-hidden">
         {/* Mobile Sidebar Overlay */}
         <div 
           className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -1508,21 +1508,18 @@ export default function Play({
 
         {/* Mobile: Centered Disk Hero with Speed & Skip Controls */}
         <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-10 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
-          <div className="relative mb-12 w-[80vw] h-[80vw] flex items-center justify-center transition-all duration-500">
-            <div className="w-full h-full shadow-[0_50px_120px_rgba(0,0,0,0.9)] rounded-full">
-              <Disk 
-                isPlaying={isPlaying} 
-                videoUrl={queue[currentVideoIndex]?.url || ''} 
-                onSeek={handleSeek} 
-                onScratch={handleScratch}
-                played={played} 
-                duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
-                isLocal={isLocalSong}
-              />
-            </div>
-            {/* Immersive mobile tonearm positioning - reaches perfect disc radius */}
-            <div className="absolute top-[-20%] right-[-25%] h-[110%] w-[110%] pointer-events-none">
-              <Tonearm isPlaying={isPlaying} parkAngle="-5deg" playingAngle="18deg" />
+          <div className="relative transform sm:scale-110 mb-2">
+            <Disk 
+              isPlaying={isPlaying} 
+              videoUrl={queue[currentVideoIndex]?.url || ''} 
+              onSeek={handleSeek} 
+              onScratch={handleScratch}
+              played={played} 
+              duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
+              isLocal={isLocalSong}
+            />
+            <div className="absolute top-[-20%] right-[-25%] sm:right-[-45%] h-full w-full pointer-events-none">
+              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
             </div>
           </div>
           
@@ -1583,34 +1580,31 @@ export default function Play({
 
               <AnimatePresence>
                 {isAmbientMenuOpen && (
-                  <>
-                    <div className="fixed inset-0 z-[190]" onClick={() => setIsAmbientMenuOpen(false)} />
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
-                    >
-                      <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
-                      {[
-                        { id: 'none', label: 'Silence' },
-                        { id: 'rain', label: 'Rainfall' },
-                        { id: 'white', label: 'White Noise' },
-                        { id: 'forest', label: 'Forest' }
-                      ].map((sound) => (
-                        <button
-                          key={sound.id}
-                          className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? (sound.id === 'none' ? 'bg-white/10 border-white/20 text-white font-black' : 'bg-white/5 border-[#b88c5a]/30 text-[#b88c5a] font-black shadow-[0_0_15px_rgba(184,140,90,0.1)]') : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
-                          onClick={() => handleAmbientChange(sound.id)}
-                        >
-                          <span className="text-[10px] uppercase font-bold tracking-[0.15em]">{sound.label}</span>
-                          {currentAmbient === sound.id && (
-                            <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] ${sound.id === 'none' ? 'bg-white' : 'bg-[#b88c5a]'}`} />
-                          )}
-                        </button>
-                      ))}
-                    </motion.div>
-                  </>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
+                  >
+                    <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
+                    {[
+                      { id: 'none', label: 'Silence' },
+                      { id: 'rain', label: 'Rainfall' },
+                      { id: 'white', label: 'White Noise' },
+                      { id: 'forest', label: 'Forest' }
+                    ].map((sound) => (
+                      <button
+                        key={sound.id}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? (sound.id === 'none' ? 'bg-white/10 border-white/20 text-white font-black' : 'bg-white/5 border-[#b88c5a]/30 text-[#b88c5a] font-black shadow-[0_0_15px_rgba(184,140,90,0.1)]') : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
+                        onClick={() => handleAmbientChange(sound.id)}
+                      >
+                        <span className="text-[10px] uppercase font-bold tracking-[0.15em]">{sound.label}</span>
+                        {currentAmbient === sound.id && (
+                          <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] ${sound.id === 'none' ? 'bg-white' : 'bg-[#b88c5a]'}`} />
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
                 )}
               </AnimatePresence>
             </div>
@@ -1637,8 +1631,8 @@ export default function Play({
         {/* LEFT: Main Hero Area - Vinyl + Tonearm centered */}
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
-          {/* Vinyl + Tonearm Hero - Lowered to prevent cutoff at top */}
-          <div className="relative flex items-center justify-center w-full mt-12 mb-8">
+          {/* Vinyl + Tonearm Hero - shifted upward */}
+          <div className="relative flex items-center justify-center w-full -mt-20">
             <div className="relative" style={{ width: 'min(80vh, 740px)', height: 'min(80vh, 740px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
@@ -1744,10 +1738,10 @@ export default function Play({
             </div>
           </div>
 
-          {/* Desktop Input - Lowered and Shadows Removed */}
-          <div className="mt-16 w-full max-w-lg">
-            <div className="p-[2px] rounded-3xl bg-white/10 shadow-none">
-              <div className={`backdrop-blur-3xl rounded-[22px] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/5' : 'bg-black/30 border border-white/10'} shadow-none`}>
+          {/* Desktop Input */}
+          <div className="mt-4 w-full max-w-lg">
+            <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+              <div className={`backdrop-blur-3xl rounded-[22px] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}>
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
               </div>
             </div>

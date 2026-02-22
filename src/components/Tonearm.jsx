@@ -8,7 +8,7 @@ export default function Tonearm({ isPlaying, parkAngle = '-10deg', playingAngle 
                 alt="Tonearm"
                 className="transform transition-transform duration-700 ease-in-out"
                 style={{
-                    width: 'clamp(160px, 45vw, 380px)',
+                    width: 'clamp(140px, 35vw, 350px)',
                     height: 'auto',
                     transform: `rotate(${isPlaying ? playingAngle : parkAngle})`,
                     transformOrigin: '50% 15%', // Precision pivot
