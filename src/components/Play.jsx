@@ -1322,7 +1322,7 @@ export default function Play({
                 className={`flex items-center justify-center p-2.5 rounded-2xl transition-all duration-300 active:scale-95 border ${
                   activeTab === 'settings'
                     ? (isDarkBg ? 'bg-white/10 border-white/20 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)]' : 'bg-[#b88c5a]/10 border-[#b88c5a]/30 text-[#b88c5a]')
-                    : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/30 hover:bg-white/5' : 'bg-black/40 border-white/20 text-white/30 hover:bg-white/10')
+                    : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/30 hover:bg-white/5' : 'bg-black/5 border-black/10 text-black/40 hover:bg-black/10')
                 }`}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1576,8 +1576,8 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-14">
-            <div className="relative" style={{ width: 'min(52vh, 500px)', height: 'min(52vh, 500px)' }}>
+          <div className="relative flex items-center justify-center w-full -mt-20">
+            <div className="relative" style={{ width: 'min(58vh, 520px)', height: 'min(58vh, 520px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1588,7 +1588,7 @@ export default function Play({
                 isLocal={isLocalSong}
               />
               {/* Tonearm pushed further right so it clears the record when paused */}
-              <div className="absolute top-[-20%] right-[-95%] h-full w-full pointer-events-none">
+              <div className="absolute top-[-20%] right-[-105%] h-full w-full pointer-events-none">
                 <Tonearm isPlaying={isPlaying} parkAngle="5deg" />
               </div>
             </div>
@@ -1605,9 +1605,38 @@ export default function Play({
               <p className="text-white/20 text-sm uppercase tracking-widest">Drop a link to begin</p>
             )}
           </div>
+          
+          {/* Desktop Speed & Skip Controls */}
+          <div className="flex items-center justify-center gap-6 mt-8 mb-4 z-30 opacity-90 transition-opacity">
+            <button 
+              onClick={handleSkipBackward} 
+              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+              title="Rewind 10s"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:-rotate-12 transition-transform duration-300">
+                <path d="M12 5v0a9 9 0 1 1 -9 9" />
+                <polygon points="12,1 7,5 12,9" fill="currentColor" strokeWidth="1" />
+                <polygon points="17,1 12,5 17,9" fill="currentColor" strokeWidth="1" />
+                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
+              </svg>
+            </button>
 
-          {/* Atmosphere Control (Desktop Home) */}
-          <div className="relative mt-8 mb-2 pointer-events-auto">
+            <button 
+              onClick={handleSkipForward} 
+              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
+              title="Skip 10s"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:rotate-12 transition-transform duration-300">
+                <path d="M12 5v0a9 9 0 1 0 9 9" />
+                <polygon points="12,1 17,5 12,9" fill="currentColor" strokeWidth="1" />
+                <polygon points="7,1 12,5 7,9" fill="currentColor" strokeWidth="1" />
+                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
+              </svg>
+            </button>
+          </div>
+
+          {/* Atmosphere Control (Desktop Home) - Moved Below */}
+          <div className="relative mt-8 mb-4 pointer-events-auto">
             <button 
               className={`flex items-center justify-center gap-4 w-[240px] px-8 py-3.5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
               onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
@@ -1653,35 +1682,6 @@ export default function Play({
               )}
             </AnimatePresence>
           </div>
-          
-          {/* Desktop Speed & Skip Controls */}
-          <div className="flex items-center justify-center gap-6 mt-8 mb-4 z-30 opacity-90 transition-opacity">
-            <button 
-              onClick={handleSkipBackward} 
-              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
-              title="Rewind 10s"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:-rotate-12 transition-transform duration-300">
-                <path d="M12 5v0a9 9 0 1 1 -9 9" />
-                <polygon points="12,1 7,5 12,9" fill="currentColor" strokeWidth="1" />
-                <polygon points="17,1 12,5 17,9" fill="currentColor" strokeWidth="1" />
-                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
-              </svg>
-            </button>
-
-            <button 
-              onClick={handleSkipForward} 
-              className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
-              title="Skip 10s"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="transform group-hover:rotate-12 transition-transform duration-300">
-                <path d="M12 5v0a9 9 0 1 0 9 9" />
-                <polygon points="12,1 17,5 12,9" fill="currentColor" strokeWidth="1" />
-                <polygon points="7,1 12,5 7,9" fill="currentColor" strokeWidth="1" />
-                <text x="12" y="17.5" textAnchor="middle" fontSize="11" fontWeight="900" fill="currentColor" stroke="none">10</text>
-              </svg>
-            </button>
-          </div>
 
           {/* Desktop Input */}
           <div className="mt-8 w-full max-w-lg">
@@ -1702,21 +1702,17 @@ export default function Play({
         {/* Desktop Sidebar Panel */}
         <div className={`transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} fixed top-0 right-0 h-full w-[380px] z-[110] flex flex-col rounded-l-[2.5rem] overflow-hidden bg-[#0d0d0d]/98 backdrop-blur-3xl shadow-[-40px_0_100px_rgba(0,0,0,0.95)] border-l border-white/10`}>
           {/* Close Button & Sleep Timer */}
-          <div className="flex items-center justify-between px-8 pt-8 pb-6 border-b border-white/5 shrink-0">
-            <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 flex-1 mr-4">
-              <button onClick={() => setActiveTab('controls')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === 'controls' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}>Controls</button>
-              <button onClick={() => setActiveTab('playlists')} className={`flex-1 py-2.5 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${activeTab === 'playlists' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}>Playlists</button>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
+          <div className="flex flex-col px-8 pt-8 pb-6 border-b border-white/5 shrink-0">
+            {/* Row 1: Action Icons (Top Row like Android) */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
                 {/* Sleep Timer */}
                 <div className="relative">
                   <button 
-                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl transition-all duration-700 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] border backdrop-blur-3xl ${sleepTime ? (isDarkBg ? 'bg-[#0d0d0d]/98 border-[#b88c5a]/40 text-[#b88c5a]' : 'bg-black/40 border-[#b88c5a]/40 text-[#b88c5a]') : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/40 border-white/20 text-white/20 hover:bg-white/10 hover:text-white/50')}`}
+                    className={`flex items-center gap-3 px-6 py-3 rounded-2xl transition-all duration-700 active:scale-95 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] border backdrop-blur-3xl ${sleepTime ? (isDarkBg ? 'bg-[#0d0d0d]/98 border-[#b88c5a]/40 text-[#b88c5a]' : 'bg-black/40 border-[#b88c5a]/40 text-[#b88c5a]') : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/5 border-black/10 text-black/20 hover:bg-black/10 hover:text-black/50')}`}
                     onClick={() => setShowSleepDial(!showSleepDial)}
                   >
-                    <div className="relative flex items-center justify-center">
+                    <div className="relative flex items-center justify-center text-current">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={sleepTime ? 'animate-pulse' : ''}>
                         <line x1="10" x2="14" y1="2" y2="2" />
                         <line x1="12" x2="15" y1="13" y2="10" />
@@ -1728,7 +1724,7 @@ export default function Play({
                     </div>
                     <div className="flex flex-col items-start gap-0">
                       {sleepTime && <span className="text-[7px] font-black uppercase tracking-tighter text-[#b88c5a] opacity-60 mb-[-2px]">Active</span>}
-                      <span className={`text-[11px] font-black uppercase tracking-[0.3em] transition-colors duration-700 ${sleepTime ? 'text-[#b88c5a]' : 'text-white/40'}`}>
+                      <span className={`text-[11px] font-black uppercase tracking-[0.3em] transition-colors duration-700 ${sleepTime ? 'text-[#b88c5a]' : (isDarkBg ? 'text-white/40' : 'text-black/40')}`}>
                         {sleepTime ? formatSleepTime(sleepTime) : "Timer"}
                       </span>
                     </div>
@@ -1747,26 +1743,42 @@ export default function Play({
                   </AnimatePresence>
                 </div>
 
-                {/* Settings icon only button */}
+                {/* Settings toggle Icon Only */}
                 <button
                   onClick={() => setActiveTab('settings')}
                   title="Settings"
                   className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 active:scale-95 border backdrop-blur-3xl ${
                     activeTab === 'settings'
                       ? (isDarkBg ? 'bg-white/10 border-white/20 text-white shadow-[0_10px_30px_rgba(0,0,0,0.5)]' : 'bg-[#b88c5a]/10 border-[#b88c5a]/30 text-[#b88c5a]')
-                      : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/40 border-white/20 text-white/20 hover:bg-white/10 hover:text-white/50')
+                      : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/20 hover:bg-white/5 hover:text-white/50' : 'bg-black/5 border-black/10 text-black/20 hover:bg-black/10 hover:text-black/50')
                   }`}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                   </svg>
                 </button>
               </div>
 
-              <button className={`p-2.5 rounded-[16px] transition-all group shrink-0 ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 hover:bg-white/5' : 'bg-black/40 border border-white/20 hover:bg-white/10'}`} onClick={() => setSidebarOpen(false)}>
-                <svg className={`group-hover:rotate-90 transition-transform duration-500 ${isDarkBg ? 'text-white/30' : 'text-white/40'}`} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <button className={`p-3 rounded-[18px] transition-all group shrink-0 ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 hover:bg-white/5' : 'bg-black/5 border border-black/10 hover:bg-black/10'}`} onClick={() => setSidebarOpen(false)}>
+                <svg className={`group-hover:rotate-90 transition-transform duration-500 ${isDarkBg ? 'text-white/30' : 'text-black/30'}`} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
+              </button>
+            </div>
+
+            {/* Row 2: Controls/Playlists Tabs (below like Android) */}
+            <div className="flex bg-white/5 p-1.5 rounded-2xl border border-white/10 w-full shadow-inner">
+              <button 
+                onClick={() => setActiveTab('controls')} 
+                className={`flex-1 py-3 text-[11px] font-black uppercase tracking-[0.25em] rounded-xl transition-all duration-500 ${activeTab === 'controls' ? 'bg-[#b88c5a] text-white shadow-[0_10px_25px_rgba(184,140,90,0.4)]' : 'text-white/20 hover:text-white/60'}`}
+              >
+                Controls
+              </button>
+              <button 
+                onClick={() => setActiveTab('playlists')} 
+                className={`flex-1 py-3 text-[11px] font-black uppercase tracking-[0.25em] rounded-xl transition-all duration-500 ${activeTab === 'playlists' ? 'bg-[#b88c5a] text-white shadow-[0_10px_25px_rgba(184,140,90,0.4)]' : 'text-white/20 hover:text-white/60'}`}
+              >
+                Playlists
               </button>
             </div>
           </div>

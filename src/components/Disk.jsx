@@ -121,7 +121,7 @@ const Disk = React.memo(function Disk({ isPlaying, videoUrl, onSeek, onScratch, 
 
   return (
     <div
-      className="relative flex flex-col items-center justify-center w-full touch-none select-none overflow-hidden"
+      className="relative flex flex-col items-center justify-center w-full h-full touch-none select-none"
       onMouseDown={handleStart}
       onMouseMove={handleMove}
       onMouseUp={handleEnd}
@@ -134,8 +134,11 @@ const Disk = React.memo(function Disk({ isPlaying, videoUrl, onSeek, onScratch, 
       <div
         className="relative"
         style={{
-          width: 'min(85vw, 500px)',
-          height: 'min(85vw, 500px)',
+          width: '100%',
+          height: '100%',
+          maxWidth: '520px',
+          maxHeight: '520px',
+          aspectRatio: '1/1',
           transform: `rotate(${currentVisualRotation}deg)`,
           transition: isDragging ? 'none' : (isPlaying ? 'transform 1s linear' : 'transform 0.5s ease-out'),
           willChange: 'transform'
