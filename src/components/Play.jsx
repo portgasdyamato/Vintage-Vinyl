@@ -1576,8 +1576,8 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-20">
-            <div className="relative" style={{ width: 'min(72vh, 670px)', height: 'min(72vh, 670px)' }}>
+          <div className="relative flex items-center justify-center w-full -mt-12">
+            <div className="relative" style={{ width: 'min(62vh, 580px)', height: 'min(62vh, 580px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1605,7 +1605,7 @@ export default function Play({
           </div>
           
           {/* Desktop Speed & Skip Controls */}
-          <div className="flex items-center justify-center gap-6 mt-8 mb-4 z-30 opacity-90 transition-opacity">
+          <div className="flex items-center justify-center gap-6 mt-6 mb-4 z-30 opacity-90 transition-opacity">
             <button 
               onClick={handleSkipBackward} 
               className={`group flex items-center justify-center w-12 h-12 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-90 transition-all duration-300 pointer-events-auto text-white/80 rounded-xl border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
@@ -1634,7 +1634,7 @@ export default function Play({
           </div>
 
           {/* Atmosphere Control (Desktop Home) - Moved Below */}
-          <div className="relative mt-2 mb-4 pointer-events-auto">
+          <div className="relative mt-3 mb-4 pointer-events-auto">
             <button 
               className={`flex items-center justify-center gap-4 w-[240px] px-8 py-3.5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
               onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
@@ -1682,7 +1682,7 @@ export default function Play({
           </div>
 
           {/* Desktop Input */}
-          <div className="mt-8 w-full max-w-lg">
+          <div className="mt-4 w-full max-w-lg">
             <div className="p-[2px] rounded-3xl bg-gradient-to-b from-white/20 to-transparent shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
               <div className={`backdrop-blur-3xl rounded-[22px] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}>
                 <InputBox newVideoLink={newVideoLink} setNewVideoLink={setNewVideoLink} onAdd={handleAddVideo} />
@@ -1730,13 +1730,11 @@ export default function Play({
 
                   <AnimatePresence>
                     {showSleepDial && (
-                      <div className="absolute top-full right-0 w-64 translate-x-0">
-                        <SleepDial 
-                          onSelect={(val) => { setSleepTime(val); setShowSleepDial(false); }} 
-                          onClose={() => setShowSleepDial(false)} 
-                          isDarkBg={isDarkBg}
-                        />
-                      </div>
+                      <SleepDial 
+                        onSelect={(val) => { setSleepTime(val); setShowSleepDial(false); }} 
+                        onClose={() => setShowSleepDial(false)} 
+                        isDarkBg={isDarkBg}
+                      />
                     )}
                   </AnimatePresence>
                 </div>
