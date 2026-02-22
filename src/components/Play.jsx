@@ -1331,7 +1331,7 @@ export default function Play({
       {/* =========================================================
           MOBILE LAYOUT (hidden on lg+): Original perfect layout
       ========================================================= */}
-      <div className="flex lg:hidden flex-col items-center justify-center h-full w-full pt-20 pb-12 overflow-hidden relative">
+      <div className="flex lg:hidden flex-col items-center justify-between h-full w-full pt-24 pb-12 overflow-hidden relative">
         {/* Mobile Sidebar Overlay */}
         <div 
           className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -1508,8 +1508,8 @@ export default function Play({
 
         {/* Mobile: Centered Disk Hero with Speed & Skip Controls */}
         <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-10 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
-          <div className="relative mb-8 w-[80vw] max-w-[340px] aspect-square flex items-center justify-center">
-            <div className="w-full h-full">
+          <div className="relative mb-10 w-[270px] h-[270px] sm:w-[320px] sm:h-[320px] flex items-center justify-center transition-all duration-500">
+            <div className="w-full h-full shadow-[0_40px_100px_rgba(0,0,0,0.8)] rounded-full">
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1520,8 +1520,9 @@ export default function Play({
                 isLocal={isLocalSong}
               />
             </div>
-            <div className="absolute top-[-15%] right-[-20%] h-full w-full pointer-events-none">
-              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
+            {/* Precision mobile tonearm positioning */}
+            <div className="absolute top-[-25%] right-[-30%] h-full w-full pointer-events-none">
+              <Tonearm isPlaying={isPlaying} parkAngle="-5deg" playingAngle="18deg" />
             </div>
           </div>
           
