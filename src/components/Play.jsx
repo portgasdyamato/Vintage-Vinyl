@@ -1601,9 +1601,7 @@ export default function Play({
                 <p className="text-white/90 font-medium text-base tracking-wide truncate">{currentSong.title || 'Now Playing'}</p>
                 <p className="text-white/30 text-xs mt-1 uppercase tracking-widest">{isPlaying ? 'Playing' : 'Paused'} · Pippofy</p>
               </>
-            ) : (
-              <p className="text-white/20 text-sm uppercase tracking-widest">Drop a link to begin</p>
-            )}
+            ) : null}
           </div>
           
           {/* Desktop Speed & Skip Controls */}
@@ -1636,7 +1634,7 @@ export default function Play({
           </div>
 
           {/* Atmosphere Control (Desktop Home) - Moved Below */}
-          <div className="relative mt-8 mb-4 pointer-events-auto">
+          <div className="relative mt-2 mb-4 pointer-events-auto">
             <button 
               className={`flex items-center justify-center gap-4 w-[240px] px-8 py-3.5 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-500 border backdrop-blur-3xl ${isDarkBg ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
               onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
