@@ -1576,8 +1576,8 @@ export default function Play({
         <div className={`flex-1 flex flex-col items-center justify-center relative px-8 xl:px-16 transition-all duration-700 ${sidebarOpen ? 'opacity-50 scale-[0.97] blur-[2px]' : 'opacity-100 scale-100 blur-0'}`}>
 
           {/* Vinyl + Tonearm Hero - shifted upward */}
-          <div className="relative flex items-center justify-center w-full -mt-16">
-            <div className="relative" style={{ width: 'min(68vh, 620px)', height: 'min(68vh, 620px)' }}>
+          <div className="relative flex items-center justify-center w-full -mt-20">
+            <div className="relative" style={{ width: 'min(80vh, 740px)', height: 'min(80vh, 740px)' }}>
               <Disk 
                 isPlaying={isPlaying} 
                 videoUrl={queue[currentVideoIndex]?.url || ''} 
@@ -1587,9 +1587,9 @@ export default function Play({
                 duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
                 isLocal={isLocalSong}
               />
-              {/* Tonearm moved slightly left so it sits on the disc */}
-              <div className="absolute top-[-20%] right-[-85%] h-full w-full pointer-events-none">
-                <Tonearm isPlaying={isPlaying} parkAngle="5deg" />
+              {/* Tonearm repositioned for perfect park (beside) and play (on disc) states */}
+              <div className="absolute top-[-25%] right-[-105%] h-full w-full pointer-events-none">
+                <Tonearm isPlaying={isPlaying} parkAngle="0deg" />
               </div>
             </div>
           </div>
