@@ -1378,20 +1378,30 @@ export default function Play({
                 className={`flex items-center justify-center p-2.5 rounded-2xl transition-all duration-300 active:scale-95 border ${
                   activeTab === 'settings'
                     ? (isDarkBg ? 'bg-white/10 border-white/20 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)]' : 'bg-[#b88c5a]/10 border-[#b88c5a]/30 text-[#b88c5a]')
-                    : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/30 hover:bg-white/5' : 'bg-black/5 border-black/10 text-black/40 hover:bg-black/10')
+                    : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/30 hover:bg-white/5' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10')
                 }`}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
                 </svg>
               </button>
+
+              {/* About / Features icon */}
+              <button
+                onClick={() => setActiveTab('about')}
+                title="Know More / Features"
+                className={`flex items-center justify-center p-2.5 rounded-2xl transition-all duration-300 active:scale-95 border ${
+                  activeTab === 'about'
+                    ? (isDarkBg ? 'bg-white/10 border-white/20 text-white shadow-[0_4px_15px_rgba(0,0,0,0.5)]' : 'bg-[#b88c5a]/10 border-[#b88c5a]/30 text-[#b88c5a]')
+                    : (isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 text-white/30 hover:bg-white/5' : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10')
+                }`}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                </svg>
+              </button>
             </div>
 
-            <button className={`p-3 rounded-[18px] transition-all group ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 hover:bg-white/5' : 'bg-black/40 border border-white/20 hover:bg-white/10'}`} onClick={() => setSidebarOpen(false)}>
-              <svg className={`group-hover:rotate-90 transition-transform duration-500 ${isDarkBg ? 'text-white/30' : 'text-white/50'}`} width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
           </div>
             <div className="flex w-full mb-8 bg-white/5 p-1 rounded-xl border border-white/10 shrink-0">
               <button onClick={() => setActiveTab('controls')} className={`flex-1 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${activeTab === 'controls' ? 'bg-[#b88c5a] text-white shadow-lg' : 'text-white/40 hover:text-white/70'}`}>Controls</button>
@@ -1457,7 +1467,7 @@ export default function Play({
                        <p className="text-white font-bold text-xs">Atmosphere</p>
                     </div>
                     <p className="text-white/30 text-[9px] leading-relaxed mb-4">
-                      Overlay immersive background layers like rain or forest sounds to enhance your focus and relaxation.
+                      Add a background layer to your music or videos. Imagine listening while sitting in a forest or in the rain, creating a truly immersive environment.
                     </p>
                     
                     <div className="grid grid-cols-2 gap-2">
@@ -1475,6 +1485,63 @@ export default function Play({
                            {sound.label}
                          </button>
                        ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'about' && (
+              <div className="flex-1 w-full overflow-y-auto scrollbar-hide px-1">
+                <header className="mb-6 text-center mt-2">
+                  <h2 className="text-white font-medium text-xs tracking-[0.2em] uppercase mb-1">About Pippofy</h2>
+                  <div className="h-0.5 w-6 bg-[#b88c5a] mx-auto rounded-full" />
+                </header>
+
+                <div className="space-y-4 pb-10">
+                  <div className={`p-5 rounded-[26px] border ${isDarkBg ? 'bg-white/[0.03] border-white/5' : 'bg-black/5 border-white/10'}`}>
+                    <p className="text-white font-bold text-sm mb-2">The Experience</p>
+                    <p className="text-white/40 text-[10px] leading-relaxed uppercase tracking-wider font-black mb-3">Premium Vinyl Interface</p>
+                    <p className="text-white/60 text-[11px] leading-relaxed">
+                      Pippofy brings the tactile warmth of vinyl to your digital library. Use the tonearm to start playback, and feel free to drag the disk to scratch or adjust the speed.
+                    </p>
+                  </div>
+
+                  <div className={`p-5 rounded-[26px] border ${isDarkBg ? 'bg-white/[0.03] border-white/5' : 'bg-black/5 border-white/10'}`}>
+                    <p className="text-[#b88c5a] font-bold text-sm mb-4 flex items-center gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                      App Features
+                    </p>
+                    <ul className="space-y-3">
+                      {[
+                        { t: "Atmosphere", d: "A background audio layer that transports you to a different environment. Imagine listening to your favorite songs, podcasts, or YouTube videos while sitting in a deep forest or in the rain.", i: "🌊" },
+                        { t: "Auto-Resume", d: "YouTube positions are saved automatically so you never lose your spot.", i: "🕒" },
+                        { t: "Native Audio", d: "Play high-fidelity files directly from your mobile device.", i: "📱" },
+                        { t: "Sleep Timer", d: "Fall asleep to curated soundscapes with automatic shutoff.", i: "🌙" }
+                      ].map((f, i) => (
+                        <li key={i} className="flex gap-3">
+                          <span className="text-sm shrink-0">{f.i}</span>
+                          <div>
+                            <p className="text-white font-bold text-[11px] mb-0.5">{f.t}</p>
+                            <p className="text-white/40 text-[10px] leading-snug">{f.d}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className={`p-5 rounded-[26px] border border-red-500/10 ${isDarkBg ? 'bg-red-500/[0.02]' : 'bg-red-500/[0.05]'}`}>
+                    <p className="text-red-400 font-bold text-sm mb-3 flex items-center gap-2">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                      Important Notes
+                    </p>
+                    <div className="space-y-2">
+                      <p className="text-white/60 text-[10px] leading-relaxed italic">
+                        <span className="text-white/80 font-bold">YouTube Backgrounding:</span> Due to platform restrictions, YouTube playback is only possible while the app is in the foreground.
+                      </p>
+                      <p className="text-white/60 text-[10px] leading-relaxed italic">
+                         <span className="text-white/80 font-bold">Device Audio:</span> Files played from your device <span className="text-green-400">DO</span> support full background playback and lock-screen controls.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1560,7 +1627,7 @@ export default function Play({
                 onClick={() => setIsAmbientMenuOpen(!isAmbientMenuOpen)}
               >
                 <div className="relative">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/30'}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={currentAmbient !== 'none' ? 'text-white' : 'text-white/30'}>
                     <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                     <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                     <line x1="12" y1="19" x2="12" y2="23"></line>
@@ -1568,12 +1635,12 @@ export default function Play({
                   </svg>
                   {currentAmbient !== 'none' && (
                     <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-[#b88c5a]"></span>
-                       <span className="relative inline-flex rounded-full h-2 w-2 bg-[#b88c5a]"></span>
+                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-white"></span>
+                       <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                     </span>
                   )}
                 </div>
-                  <span className={`text-[11px] font-black uppercase tracking-[0.25em] ${currentAmbient !== 'none' ? 'text-[#b88c5a]' : 'text-white/40'}`}>
+                  <span className={`text-[11px] font-black uppercase tracking-[0.25em] ${currentAmbient !== 'none' ? 'text-white' : 'text-white/40'}`}>
                     {currentAmbient === 'none' ? 'Atmosphere' : currentAmbient}
                   </span>
               </button>
@@ -1581,10 +1648,10 @@ export default function Play({
               <AnimatePresence>
                 {isAmbientMenuOpen && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-8 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
                   >
                     <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
                     {[
@@ -1595,12 +1662,12 @@ export default function Play({
                     ].map((sound) => (
                       <button
                         key={sound.id}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? (sound.id === 'none' ? 'bg-white/10 border-white/20 text-white font-black' : 'bg-white/5 border-[#b88c5a]/30 text-[#b88c5a] font-black shadow-[0_0_15px_rgba(184,140,90,0.1)]') : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all border ${currentAmbient === sound.id ? 'bg-white/10 border-white/30 text-white font-black shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-transparent border-transparent text-white/30 hover:bg-white/5 hover:text-white/60'}`}
                         onClick={() => handleAmbientChange(sound.id)}
                       >
                         <span className="text-[10px] uppercase font-bold tracking-[0.15em]">{sound.label}</span>
                         {currentAmbient === sound.id && (
-                          <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] ${sound.id === 'none' ? 'bg-white' : 'bg-[#b88c5a]'}`} />
+                          <div className={`w-1.5 h-1.5 rounded-full animate-pulse shadow-[0_0_8px_currentColor] bg-white`} />
                         )}
                       </button>
                     ))}

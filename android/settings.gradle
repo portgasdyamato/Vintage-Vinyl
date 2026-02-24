@@ -14,13 +14,6 @@ dependencyResolutionManagement {
             dirs 'capacitor-cordova-android-plugins/src/main/libs', 'app/libs'
         }
     }
-    components.all {
-        if (id.group == 'org.bouncycastle') {
-            id.version {
-                strictly '1.78.1'
-            }
-        }
-    }
 }
 
 include ':app'

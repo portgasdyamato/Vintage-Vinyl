@@ -10,21 +10,35 @@ import { Preferences } from '@capacitor/preferences';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import MobileLanding from './components/MobileLanding';
+import { Capacitor } from '@capacitor/core';
+
 export default function App() {
     const [isReady, setIsReady] = React.useState(false);
     const [isDarkBg, setIsDarkBg] = React.useState(false);
+    const [isMobileWeb, setIsMobileWeb] = React.useState(false);
     const splashTimerRef = React.useRef(false);
     const initialMountRef = React.useRef(true);
 
     useEffect(() => {
+        // Check if we should show the mobile landing page
+        const checkPlatform = () => {
+            const isNative = Capacitor.isNativePlatform();
+            const isMobile = window.innerWidth <= 768;
+            setIsMobileWeb(!isNative && isMobile);
+        };
+        checkPlatform();
+        window.addEventListener('resize', checkPlatform);
+        
         // Request permissions and hide native splash
         const init = async () => {
-            const status = await LocalNotifications.checkPermissions();
-            if (status.display !== 'granted') {
-                await LocalNotifications.requestPermissions();
+            if (Capacitor.isNativePlatform()) {
+                const status = await LocalNotifications.checkPermissions();
+                if (status.display !== 'granted') {
+                    await LocalNotifications.requestPermissions();
+                }
+                await SplashScreen.hide();
             }
-            // Hide native splash immediately so our cinematic one can take over
-            await SplashScreen.hide();
         };
         init();
 
@@ -43,7 +57,10 @@ export default function App() {
             }
         }, 6000); 
 
-        return () => clearTimeout(safetyTimeout);
+        return () => {
+            clearTimeout(safetyTimeout);
+            window.removeEventListener('resize', checkPlatform);
+        };
     }, []);
 
     useEffect(() => {
@@ -91,6 +108,10 @@ export default function App() {
         const y = (e.clientY || (e.touches && e.touches[0].clientY) || 0);
         setMousePos({ x, y });
     };
+
+    if (isMobileWeb) {
+        return <MobileLanding />;
+    }
 
     return (
         <div 
@@ -187,7 +208,7 @@ export default function App() {
                                         <motion.span
                                             key={i}
                                             variants={letterVariants}
-                                            style={{ fontFamily: "'Playfair Display', serif" }}
+                                            style={{ fontFamily: "'M PLUS Rounded 1c', sans-serif" }}
                                             className="text-white text-5xl sm:text-7xl font-black tracking-widest drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]"
                                         >
                                             <span className="bg-clip-text text-transparent bg-gradient-to-b from-[#f3e1cc] to-[#b88c5a]">
