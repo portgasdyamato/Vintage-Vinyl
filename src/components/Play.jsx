@@ -149,7 +149,7 @@ export default function Play({
 }) {
   const [newVideoLink, setNewVideoLink] = useState(''); // Input for new video link
   const [playbackRate, setPlaybackRate] = useState(1); // State to control playback speed
-  const [isRepeat, setIsRepeat] = useState(false); // State to track repeat mode
+  const [playbackMode, setPlaybackMode] = useState('none'); // none | repeat-song | repeat-queue | shuffle
   const [activeTab, setActiveTab] = useState('controls'); // controls | playlists
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -284,7 +284,7 @@ export default function Play({
 
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currentSong?.title || 'Pippofy Track',
-        artist: `Pippofy • ${isRepeat ? '🔂 Looping' : '▶️ Sequential'}`,
+        artist: `Pippofy • ${playbackMode === 'repeat-song' ? '🔂 Repeating Song' : playbackMode === 'repeat-queue' ? '🔁 Repeating Queue' : playbackMode === 'shuffle' ? '🔀 Shuffled' : '▶️ Sequential'}`,
         album: 'Vinyl Collection',
         artwork: [
           { src: thumbnail, sizes: '512x512', type: 'image/jpeg' }
@@ -305,7 +305,7 @@ export default function Play({
           }
       });
     }
-  }, [currentVideoIndex, isRepeat, currentSong?.url]);
+  }, [currentVideoIndex, playbackMode, currentSong?.url]);
 
   // Sleep Timer countdown logic
   useEffect(() => {
@@ -914,23 +914,35 @@ export default function Play({
         </div>
       </button>
 
-      {/* Row 1: Repeat */}
+      {/* Row 1: Playback Mode (Sequential -> Repeat Song -> Repeat Queue -> Shuffle) */}
       <button
         className="group focus:outline-none active:scale-90 transition-all duration-200"
-        onClick={() => setIsRepeat(!isRepeat)}
-        title={isRepeat ? 'Repeat On' : 'Repeat Off'}
+        onClick={() => {
+          const modes = ['none', 'repeat-song', 'repeat-queue', 'shuffle'];
+          const nextIndex = (modes.indexOf(playbackMode) + 1) % modes.length;
+          setPlaybackMode(modes[nextIndex]);
+          showToast(`Mode: ${modes[nextIndex].replace('-', ' ').toUpperCase()}`);
+        }}
+        title={`Playback Mode: ${playbackMode.replace('-', ' ')}`}
       >
         <div className={`flex items-center justify-center w-14 h-14 rounded-full transition-colors duration-200 ${
-          isRepeat
+          playbackMode !== 'none'
             ? 'text-[#b88c5a] bg-[#b88c5a]/10'
             : 'text-white/28 bg-white/[0.03] group-hover:text-white/65 group-hover:bg-white/[0.07]'
         }`}>
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="17 1 21 5 17 9" />
-            <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-            <polyline points="7 23 3 19 7 15" />
-            <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-          </svg>
+          {playbackMode === 'shuffle' ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 3 21 3 21 8" /><line x1="4" y1="20" x2="21" y2="3" /><polyline points="21 16 21 21 16 21" /><line x1="15" y1="15" x2="21" y2="21" /><line x1="4" y1="4" x2="9" y2="9" />
+            </svg>
+          ) : playbackMode === 'repeat-song' ? (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" /><text x="12" y="15" fontSize="8" fontWeight="bold" fill="currentColor" stroke="none" textAnchor="middle">1</text>
+            </svg>
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="17 1 21 5 17 9" /><path d="M3 11V9a4 4 0 0 1 4-4h14" /><polyline points="7 23 3 19 7 15" /><path d="M21 13v2a4 4 0 0 1-4 4H3" />
+            </svg>
+          )}
         </div>
       </button>
 
@@ -1537,10 +1549,13 @@ export default function Play({
                     </p>
                     <div className="space-y-2">
                       <p className="text-white/60 text-[10px] leading-relaxed italic">
-                        <span className="text-white/80 font-bold">YouTube Backgrounding:</span> Due to platform restrictions, YouTube playback is only possible while the app is in the foreground.
+                        <span className="text-white/80 font-bold">App Note:</span> YouTube background playback in the <span className="text-[#b88c5a]">Android App</span> is restricted by OS policies. It only plays when the app is open.
                       </p>
                       <p className="text-white/60 text-[10px] leading-relaxed italic">
-                         <span className="text-white/80 font-bold">Device Audio:</span> Files played from your device <span className="text-green-400">DO</span> support full background playback and lock-screen controls.
+                         <span className="text-white/80 font-bold">Website Power:</span> For full background YouTube listening (podcasts/lectures), visit <span className="text-white/90 underline font-black">pippofy.com</span> in your browser.
+                      </p>
+                      <p className="text-white/60 text-[10px] leading-relaxed italic">
+                         <span className="text-white/80 font-bold">Device Audio:</span> Local MP3/WAV files <span className="text-green-400">DO</span> support full background playback and lock-screen controls in-app.
                       </p>
                     </div>
                   </div>
@@ -1574,7 +1589,7 @@ export default function Play({
           </div>
 
         {/* Mobile: Centered Disk Hero with Speed & Skip Controls */}
-        <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-10 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
+        <div className={`flex-1 flex flex-col items-center justify-center w-full relative z-40 px-4 transition-all duration-700 ${sidebarOpen ? 'scale-90 opacity-40 blur-sm' : 'scale-100 opacity-100'}`}>
           <div className="relative transform sm:scale-110 mb-2">
             <Disk 
               isPlaying={isPlaying} 
@@ -1585,7 +1600,7 @@ export default function Play({
               duration={isLocalSong ? audioTagRef.current?.duration : playerRef.current?.getDuration()} 
               isLocal={isLocalSong}
             />
-            <div className="absolute top-[-20%] right-[-25%] sm:right-[-45%] h-full w-full pointer-events-none">
+            <div className="absolute top-[-20%] right-[-15%] sm:right-[-40%] h-full w-full pointer-events-none">
               <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
             </div>
           </div>
@@ -2066,11 +2081,22 @@ export default function Play({
                 }}
                 onEnded={() => {
                   setPlayed(0);
-                  if (isRepeat) {
+                  if (playbackMode === 'repeat-song') {
                     playerRef.current?.seekTo(0);
                     setIsPlaying(true);
-                  } else {
+                  } else if (playbackMode === 'shuffle') {
+                    const nextIndex = Math.floor(Math.random() * queue.length);
+                    setCurrentVideoIndex(nextIndex);
+                  } else if (playbackMode === 'repeat-queue') {
                     setCurrentVideoIndex((prev) => (prev + 1) % queue.length);
+                  } else {
+                    // Sequential
+                    if (currentVideoIndex < queue.length - 1) {
+                      setCurrentVideoIndex(prev => prev + 1);
+                    } else {
+                      setIsPlaying(false);
+                      setCurrentVideoIndex(0);
+                    }
                   }
                 }}
                 onError={(e) => {
@@ -2115,11 +2141,22 @@ export default function Play({
             }}
             onEnded={() => {
               setPlayed(0);
-              if (isRepeat) {
+              if (playbackMode === 'repeat-song') {
                 audioTagRef.current.currentTime = 0;
                 audioTagRef.current.play();
-              } else {
+              } else if (playbackMode === 'shuffle') {
+                const nextIndex = Math.floor(Math.random() * queue.length);
+                setCurrentVideoIndex(nextIndex);
+              } else if (playbackMode === 'repeat-queue') {
                 setCurrentVideoIndex((prev) => (prev + 1) % queue.length);
+              } else {
+                // Sequential
+                if (currentVideoIndex < queue.length - 1) {
+                  setCurrentVideoIndex(prev => prev + 1);
+                } else {
+                  setIsPlaying(false);
+                  setCurrentVideoIndex(0);
+                }
               }
             }}
           />

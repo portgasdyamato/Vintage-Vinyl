@@ -64,7 +64,7 @@ export default function MobileLanding() {
           onClick={handleDownload}
           className="w-full max-w-xs bg-gradient-to-b from-[#f3e1cc] to-[#b88c5a] text-black font-extrabold py-5 rounded-[22px] shadow-[0_20px_40px_rgba(184,140,90,0.3)] mb-4 active:scale-95 transition-transform"
         >
-          Download Pippofy v1.3
+          Download Pippofy v1.6
         </motion.button>
         <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-16 font-bold">Available for Android</p>
 
