@@ -1552,7 +1552,7 @@ export default function Play({
                         <span className="text-white/80 font-bold">App Note:</span> YouTube background playback in the <span className="text-[#b88c5a]">Android App</span> is restricted by OS policies. It only plays when the app is open.
                       </p>
                       <p className="text-white/60 text-[10px] leading-relaxed italic">
-                         <span className="text-white/80 font-bold">Website Power:</span> For full background YouTube listening (podcasts/lectures), visit <span className="text-white/90 underline font-black">pippofy.com</span> in your browser.
+                         <span className="text-white/80 font-bold">Website Power:</span> For full background YouTube listening (podcasts/lectures), visit <span className="text-white/90 underline font-black">pippofy.vercel.app</span> in your browser.
                       </p>
                       <p className="text-white/60 text-[10px] leading-relaxed italic">
                          <span className="text-white/80 font-bold">Device Audio:</span> Local MP3/WAV files <span className="text-green-400">DO</span> support full background playback and lock-screen controls in-app.

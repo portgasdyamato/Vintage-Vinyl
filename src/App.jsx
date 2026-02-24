@@ -24,8 +24,11 @@ export default function App() {
         // Check if we should show the mobile landing page
         const checkPlatform = () => {
             const isNative = Capacitor.isNativePlatform();
-            const isMobile = window.innerWidth <= 768;
-            setIsMobileWeb(!isNative && isMobile);
+            const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isMobileWidth = window.innerWidth <= 768;
+            
+            // Show landing if on mobile web (not in native app and is mobile device)
+            setIsMobileWeb(!isNative && (isMobileWidth || isMobileUA));
         };
         checkPlatform();
         window.addEventListener('resize', checkPlatform);
