@@ -1542,8 +1542,8 @@ export default function Play({
                     </ul>
                   </div>
 
-                  <div className={`p-5 rounded-[26px] border border-red-500/10 ${isDarkBg ? 'bg-red-500/[0.02]' : 'bg-red-500/[0.05]'}`}>
-                    <p className="text-red-400 font-bold text-sm mb-3 flex items-center gap-2">
+                  <div className={`p-5 rounded-[26px] border border-[#b88c5a]/20 ${isDarkBg ? 'bg-[#b88c5a]/[0.02]' : 'bg-[#b88c5a]/[0.05]'}`}>
+                    <p className="text-[#b88c5a] font-bold text-sm mb-3 flex items-center gap-2">
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                       Important Notes
                     </p>
@@ -1601,7 +1601,7 @@ export default function Play({
               isLocal={isLocalSong}
             />
             <div className="absolute top-[-20%] right-[-15%] sm:right-[-40%] h-full w-full pointer-events-none">
-              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="18deg" />
+              <Tonearm isPlaying={isPlaying} parkAngle="-2deg" playingAngle="12deg" />
             </div>
           </div>
           
@@ -1663,12 +1663,11 @@ export default function Play({
               <AnimatePresence>
                 {isAmbientMenuOpen && (
                   <motion.div 
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-4 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_-30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_-20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
                   >
-                    <p className="text-[9px] font-black uppercase tracking-[2px] text-white/30 px-4 py-3 border-b border-white/5 mb-1">Select Environment</p>
                     {[
                       { id: 'none', label: 'Silence' },
                       { id: 'rain', label: 'Rainfall' },
