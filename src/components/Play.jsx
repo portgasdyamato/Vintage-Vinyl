@@ -1666,7 +1666,7 @@ export default function Play({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[200] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_-30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_-20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
+                    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-44 backdrop-blur-3xl rounded-[30px] p-2 z-[999] overflow-hidden ${isDarkBg ? 'bg-[#0d0d0d]/98 border border-white/10 shadow-[0_-30px_80px_rgba(0,0,0,1)]' : 'bg-black/40 border border-white/20 shadow-[0_-20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)]'}`}
                   >
                     {[
                       { id: 'none', label: 'Silence' },
