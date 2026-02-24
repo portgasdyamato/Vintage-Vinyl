@@ -1635,7 +1635,7 @@ export default function Play({
           </div>
 
           {/* Atmosphere Control: Icon + Text */}
-          <div className="flex flex-col items-center gap-1 z-[45] mb-6 pointer-events-auto">
+          <div className="flex flex-col items-center gap-1 z-[500] mb-6 pointer-events-auto">
             <div className="relative">
               <button 
                 className={`flex items-center justify-center gap-3 w-[220px] px-6 py-3 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(255,255,255,0.05)] active:scale-95 transition-all duration-300 border ${isDarkBg ? 'bg-[#0d0d0d]/98 border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.95)] hover:bg-white/5' : 'bg-black/40 border-white/20 hover:bg-white/10'}`}
