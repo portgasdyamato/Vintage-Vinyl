@@ -8,9 +8,9 @@ import Disk from './Disk';
 import Toast from './Toast';
 
 // Atmosphere Audio Assets
-import forestAudio from '../assets/forest.mp3';
-import rainfallAudio from '../assets/rainfall.mp3';
-import whiteNoiseAudio from '../assets/white noise.mp3';
+const forestAudio = '/assets/forest.mp3';
+const rainfallAudio = '/assets/rainfall.mp3';
+const whiteNoiseAudio = '/assets/white_noise.mp3';
 
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Preferences } from '@capacitor/preferences';

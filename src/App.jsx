@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import Play from './components/Play';
 import Navbar from './components/Navbar';
 import './App.css'; // Import the CSS file for styling
-import bgVideo from './assets/bg.mp4'; // Import the background video
-import darkBgVideo from './assets/darkbg.mp4'; // Import the dark background video
-import pippofyLogo from './assets/pippofy.png'; // Import the branding logo
+const bgVideo = '/assets/bg.mp4';
+const darkBgVideo = '/assets/darkbg.mp4';
+import pippofyLogo from './assets/pippofy.png';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Preferences } from '@capacitor/preferences';
 import { SplashScreen } from '@capacitor/splash-screen';
