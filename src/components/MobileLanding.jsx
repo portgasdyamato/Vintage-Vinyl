@@ -12,7 +12,7 @@ export default function MobileLanding() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/Pippofy.Music.Player.apk';
+    link.href = '/Pippofy_Final_v107.apk';
     link.download = 'Pippofy Music Player.apk';
     document.body.appendChild(link);
     link.click();
