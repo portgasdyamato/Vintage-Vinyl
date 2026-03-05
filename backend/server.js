@@ -36,21 +36,33 @@ app.get('/download', (req, res) => {
   ytdlp.on('error', (err) => res.status(500).send('Streaming Error'));
 });
 
-// Search without API Key (using yt-dlp)
+// Search YouTube without API Key (scrapes HTML)
 app.get('/search', (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).send('No query provided');
 
-  const ytdlp = spawn('yt-dlp', [
-    'ytsearch1:' + query,
-    '--get-id'
-  ]);
+  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
 
-  let videoId = '';
-  ytdlp.stdout.on('data', (data) => videoId += data.toString().trim());
-  ytdlp.on('close', () => {
-    if (videoId) res.json({ videoId });
-    else res.status(404).send('No results');
+  https.get(searchUrl, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept-Language': 'en-US,en;q=0.9'
+    }
+  }, (response) => {
+    let data = '';
+    response.on('data', chunk => data += chunk);
+    response.on('end', () => {
+      // YouTube embeds initial data as a JS variable in the page
+      const match = data.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+      if (match && match[1]) {
+        res.json({ videoId: match[1] });
+      } else {
+        res.status(404).send('No results found');
+      }
+    });
+  }).on('error', (err) => {
+    console.error('YouTube search error:', err);
+    res.status(500).send('Search failed');
   });
 });
 
