@@ -249,6 +249,8 @@ export default function Play({
   });
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+  // No YouTube API Key needed! Search is handled by the backend.
+  const YOUTUBE_API_KEY = import.meta.env.VITE_YOUTUBE_API_KEY || 'AIzaSyBepNVCKYHPahyaSSTpz-lPFo_n2khb5v8';
 
   const showToast = (message, type = 'success') => {
     setToastConfig({ message, type });
@@ -271,7 +273,20 @@ export default function Play({
   }, [isPlaying]);
 
   const currentSong = queue[currentVideoIndex];
-  const isLocalSong = currentSong?.isLocal || currentSong?.url?.startsWith('_capacitor_file_') || currentSong?.url?.startsWith('blob:');
+  const isLocalSong = currentSong?.isLocal || currentSong?.url?.startsWith('_capacitor_file_') || currentSong?.url?.startsWith('blob:') || currentSong?.url?.includes('/download?');
+
+  // Explicit Audio Control for Background Playback
+  useEffect(() => {
+    if (!audioTagRef.current || !isLocalSong) return;
+    
+    if (isPlaying) {
+      audioTagRef.current.play().catch(e => {
+          console.warn("Audio tag play failed, likely needs gesture:", e);
+      });
+    } else {
+      audioTagRef.current.pause();
+    }
+  }, [isPlaying, currentVideoIndex, isLocalSong, currentSong?.url]);
 
   // Sync Media Metadata - ONLY when the song actually changes (prevents audio hardware re-sync stutters)
   useEffect(() => {
@@ -522,20 +537,90 @@ export default function Play({
     return match ? match[1] : null;
   };
 
-  const fetchVideoTitle = async (videoId) => {
-    const apiKey = 'AIzaSyBepNVCKYHPahyaSSTpz-lPFo_n2khb5v8'; // Replace with your YouTube Data API key
-    const apiUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`;
-
+  const searchYouTube = async (query) => {
     try {
-      const response = await fetch(apiUrl);
+      // Use our backend search instead of YouTube API!
+      const response = await fetch(`${BACKEND_URL}/search?q=${encodeURIComponent(query)}`);
       const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        return data.items[0].snippet.title; // Return the video title
+      if (data && data.videoId) {
+        return data.videoId;
       }
     } catch (error) {
-      console.error('Error fetching video title:', error);
+      console.error('Error searching YouTube on backend:', error);
     }
-    return 'Unknown Title'; // Fallback title
+    return null;
+  };
+
+  const handleSpotifyLink = async (rawUrl) => {
+    const url = rawUrl.trim();
+    try {
+      if (url.includes('/playlist/')) {
+        showToast('Scanning Spotify Playlist...', 'info');
+        const response = await fetch(`${BACKEND_URL}/spotify-playlist?url=${encodeURIComponent(url)}`);
+        if (!response.ok) throw new Error('Spotify playlist scan failed');
+        const { tracks } = await response.json();
+        
+        if (tracks && tracks.length > 0) {
+          showToast(`Found ${tracks.length} tracks. Syncing...`, 'info');
+          let addedCount = 0;
+          for (const trackName of tracks) {
+            const videoId = await searchYouTube(trackName);
+            if (videoId) {
+              const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+              setQueue((prevQueue) => {
+                const trackTitle = trackName;
+                const alreadyExists = prevQueue.some(q => q.title === trackTitle);
+                if (alreadyExists) return prevQueue;
+                if (prevQueue.length === 0) setIsPlaying(true);
+                return [...prevQueue, { 
+                  url: streamUrl, 
+                  title: trackTitle,
+                  isLocal: true,
+                  originalUrl: `https://www.youtube.com/watch?v=${videoId}`
+                }];
+              });
+              addedCount++;
+            }
+          }
+          showToast(`Successfully synced ${addedCount} tracks!`, 'success');
+        } else {
+          showToast('No tracks found in playlist', 'error');
+        }
+        return;
+      }
+
+      // Single track logic
+      const response = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`);
+      if (!response.ok) throw new Error('Spotify metadata fetch failed');
+      const data = await response.json();
+      
+      if (data && data.title) {
+        showToast(`Identifying: ${data.title}`, 'info');
+        const videoId = await searchYouTube(data.title);
+        
+        if (videoId) {
+          const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+          setQueue((prevQueue) => {
+            const finalTitle = data.title;
+            const alreadyExists = prevQueue.some(q => q.title === finalTitle);
+            if (alreadyExists) return prevQueue;
+            if (prevQueue.length === 0) setIsPlaying(true);
+            return [...prevQueue, { 
+              url: streamUrl, 
+              title: finalTitle,
+              isLocal: true,
+              originalUrl: `https://www.youtube.com/watch?v=${videoId}`
+            }];
+          });
+          showToast('Spotify song synced for background play!', 'success');
+        } else {
+          showToast('No match found for this song', 'error');
+        }
+      }
+    } catch (error) {
+      console.error('Spotify error:', error);
+      showToast('Could not resolve Spotify link', 'error');
+    }
   };
 
   const fetchPlaylistVideos = async (playlistId) => {
@@ -568,44 +653,58 @@ export default function Play({
   };
 
   const handleAddVideo = async () => {
-    if (newVideoLink.trim() !== '') {
-      const isPlaylist = newVideoLink.includes('list='); // Check if the link is a playlist
-      if (isPlaylist) {
-        const playlistId = extractPlaylistId(newVideoLink); // Extract the playlist ID
-        if (playlistId) {
-          const videos = await fetchPlaylistVideos(playlistId); // Fetch videos from the playlist
-          if (videos.length > 0) {
-            const updatedQueue = videos.map((video) => ({
-              url: `https://www.youtube.com/watch?v=${video.videoId}`,
-              title: video.title, // Use the actual title of the video
-            }));
-            setQueue((prevQueue) => {
-              if (prevQueue.length === 0) setIsPlaying(true);
-              return [...prevQueue, ...updatedQueue];
-            }); // Add all videos to the queue
-            setToastConfig({ message: 'Playlist added successfully!', type: 'success' });
-          } else {
-            setToastConfig({ message: 'No videos found in the playlist.', type: 'error' });
-          }
-        } else {
-          setToastConfig({ message: 'Invalid playlist link.', type: 'error' });
-        }
-      } else {
-        const videoId = extractVideoId(newVideoLink); // Extract the video ID
-        if (videoId) {
-          const title = await fetchVideoTitle(videoId); // Fetch the video title
+    const link = newVideoLink.trim();
+    if (link === '') {
+      showToast('Please enter a link', 'error');
+      return;
+    }
+
+    setNewVideoLink(''); // Clear immediately for better UX
+
+    // 1. Spotify Handling (Playlist or Song)
+    if (link.toLowerCase().includes('spotify.com') || link.toLowerCase().includes('spotify.link')) {
+      await handleSpotifyLink(link);
+      return;
+    }
+
+    // 2. YouTube Playlist Handling
+    if (link.includes('list=')) {
+      const playlistId = extractPlaylistId(link);
+      if (playlistId) {
+        showToast('Fetching YouTube Playlist...', 'info');
+        const videos = await fetchPlaylistVideos(playlistId);
+        if (videos.length > 0) {
+          const updatedQueue = videos.map((video) => ({
+            url: `https://www.youtube.com/watch?v=${video.videoId}`,
+            title: video.title,
+          }));
           setQueue((prevQueue) => {
             if (prevQueue.length === 0) setIsPlaying(true);
-            return [...prevQueue, { url: newVideoLink, title }];
-          }); // Add the video to the queue
-          setToastConfig({ message: 'Video added to queue!', type: 'success' });
+            return [...prevQueue, ...updatedQueue];
+          });
+          showToast(`Added ${videos.length} videos from playlist`, 'success');
         } else {
-          setToastConfig({ message: 'Invalid video link.', type: 'error' });
+          showToast('No videos found in playlist', 'error');
         }
+      } else {
+        showToast('Invalid YouTube playlist link', 'error');
       }
-      setNewVideoLink(''); // Clear the input field
+      return;
+    }
+
+    // 3. Single YouTube Video Handling
+    const videoId = extractVideoId(link);
+    if (videoId) {
+      showToast('Adding video...', 'info');
+      // No extra API call needed for titles anymore if we trust the user link, 
+      // but let's keep the fallback videoTitle if it was available.
+      setQueue((prevQueue) => {
+        if (prevQueue.length === 0) setIsPlaying(true);
+        return [...prevQueue, { url: link, title: 'YouTube Audio' }];
+      });
+      showToast('Video added to queue!', 'success');
     } else {
-      setToastConfig({ message: 'Please enter a valid YouTube link.', type: 'error' }); // Show alert if the input box is empty
+      showToast('Invalid video or song link', 'error');
     }
   };
 
