@@ -7,6 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 app.use(cors());
+app.use((req, res, next) => { res.setHeader('Bypass-Tunnel-Reminder', 'true'); next(); });
 
 // Health Check
 app.get('/', (req, res) => res.send('Pippofy Backend is running!'));
