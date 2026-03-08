@@ -484,7 +484,12 @@ export default function Play({
 
       if (newIsLocal) {
         if (audioTagRef.current && audioTagRef.current.src !== newSong.url) {
+          console.log("[audio] Switching source to:", newSong.url);
           audioTagRef.current.src = newSong.url;
+          audioTagRef.current.load();
+          if (isPlaying) {
+            audioTagRef.current.play().catch(err => console.error("[audio] Play failed:", err));
+          }
         }
       } else {
         // Stop local audio engine before starting YouTube
@@ -1363,7 +1368,9 @@ export default function Play({
                 >
                   <div className="flex-1 min-w-0 pr-4">
                     <p className={`text-white text-xs font-medium truncate transition-colors ${editingPlaylistId === selectedPlaylistId ? '' : 'group-hover:text-[#b88c5a]'}`}>{song.title}</p>
-                    <p className="text-white/30 text-[10px] uppercase tracking-tighter mt-0.5">{song.isLocal ? 'Local Audio' : 'YouTube'}</p>
+                    <p className="text-white/30 text-[10px] uppercase tracking-tighter mt-0.5">
+                      {song.url.includes('/download') ? 'Background Stream' : (song.isLocal ? 'Local Audio' : 'YouTube')}
+                    </p>
                   </div>
                   <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all shrink-0">
                     {editingPlaylistId !== selectedPlaylistId && (
