@@ -14,63 +14,63 @@ app.use((req, res, next) => { res.setHeader('Bypass-Tunnel-Reminder', 'true'); n
 app.get('/', (req, res) => res.send('Pippofy Backend is running!'));
 
 // ─── Download & Stream (YouTube or any yt-dlp supported URL) ──────────────
-app.get('/download', (req, res) => {
+// This endpoint now fetches the DIRECT audio URL from yt-dlp and proxies it.
+// This supports seeking, background playback, and is highly efficient.
+app.get('/download', async (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send('No URL provided');
 
-  // First, get duration so we can set Content-Length for proper seeking
+  console.log(`[download] Request for: ${url}`);
+
+  // Step 1: Get the direct stream URL + duration + content-length from yt-dlp
   const infoProc = spawn('yt-dlp', [
+    '--get-url',
     '--print', '%(duration)s',
+    '-f', 'bestaudio',
     '--no-playlist',
     '--cookies', 'cookies.txt',
     url
   ]);
 
-  let durationStr = '';
-  infoProc.stdout.on('data', d => durationStr += d.toString());
+  let output = '';
+  infoProc.stdout.on('data', d => output += d.toString());
+  
+  infoProc.on('close', (code) => {
+    const lines = output.trim().split('\n');
+    const directUrl = lines[0]?.trim();
+    const duration = parseFloat(lines[1]?.trim());
 
-  infoProc.on('close', () => {
-    const duration = parseFloat(durationStr.trim());
-    // Estimate: ~128kbps = 16000 bytes/sec
-    const estimatedBytes = isFinite(duration) ? Math.floor(duration * 16000) : undefined;
+    if (!directUrl || !directUrl.startsWith('http')) {
+      console.error(`[download] Failed to get stream URL: ${output}`);
+      return res.status(500).send('Could not extract audio stream');
+    }
 
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Content-Disposition', 'attachment; filename="audio.mp3"');
-    if (estimatedBytes) res.setHeader('Content-Length', estimatedBytes);
+    console.log(`[download] Proxying stream: ${directUrl.substring(0, 50)}...`);
 
-    const ytdlp = spawn('yt-dlp', [
-      '-f', 'bestaudio',
-      '--extract-audio',
-      '--audio-format', 'mp3',
-      '--audio-quality', '5',
-      '--no-playlist',
-      '--cookies', 'cookies.txt',
-      '-o', '-',
-      url
-    ]);
-
-    ytdlp.stdout.pipe(res);
-    ytdlp.stderr.on('data', data => console.error(`yt-dlp: ${data}`));
-    ytdlp.on('error', err => {
-      console.error('yt-dlp spawn error:', err);
-      if (!res.headersSent) res.status(500).send('Streaming Error');
+    // Step 2: Proxy the direct stream URL to the client
+    const clientReq = (directUrl.startsWith('https') ? https : http).get(directUrl, (clientRes) => {
+      // Forward status and essential headers
+      res.writeHead(clientRes.statusCode, {
+        'Content-Type': 'audio/mpeg',
+        'Accept-Ranges': 'bytes',
+        'Cache-Control': 'public, max-age=3600',
+        'Content-Length': clientRes.headers['content-length'],
+        'Content-Range': clientRes.headers['content-range']
+      });
+      clientRes.pipe(res);
     });
-    req.on('close', () => ytdlp.kill('SIGTERM'));
+
+    clientReq.on('error', (err) => {
+      console.error('[download] Proxy error:', err);
+      if (!res.headersSent) res.status(500).send('Proxy failed');
+    });
+
+    req.on('close', () => clientReq.destroy());
   });
 
-  infoProc.on('error', () => {
-    // Fallback: just stream without Content-Length
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Content-Disposition', 'attachment; filename="audio.mp3"');
-    const ytdlp = spawn('yt-dlp', [
-      '-f', 'bestaudio', '--extract-audio', '--audio-format', 'mp3',
-      '--audio-quality', '5', '--no-playlist', '--cookies', 'cookies.txt', '-o', '-', url
-    ]);
-    ytdlp.stdout.pipe(res);
-    ytdlp.stderr.on('data', data => console.error(`yt-dlp: ${data}`));
-    req.on('close', () => ytdlp.kill('SIGTERM'));
+  infoProc.on('error', (err) => {
+    console.error('[download] yt-dlp spawn error:', err);
+    res.status(500).send('Stream initialization failed');
   });
 });
 
@@ -136,12 +136,12 @@ function ytdlpSearch(query, res) {
 }
 
 // ─── Spotify Single Track resolver ────────────────────────────────────────
-// 3-stage chain: oEmbed → og:title scrape → URL slug fallback
+// 3-stage chain: oEmbed → Scrape <title> / og:title → URL slug fallback
 app.get('/spotify-track', (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send('No URL provided');
 
-  // Extract track ID for direct page URL
+  // Handle spotify.link and other redirects via a quick follow
   const trackIdMatch = url.match(/track\/([a-zA-Z0-9]+)/);
   const pageUrl = trackIdMatch
     ? `https://open.spotify.com/track/${trackIdMatch[1]}`
@@ -149,74 +149,72 @@ app.get('/spotify-track', (req, res) => {
 
   const HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-    'Accept-Language': 'en-US,en;q=0.9',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
   };
 
-  // Stage 1: oEmbed (fastest)
+  console.log(`[spotify-track] Attempting Stage 1 (oEmbed) for ${pageUrl}`);
   const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(pageUrl)}`;
   https.get(oembedUrl, { headers: HEADERS }, (r) => {
-    // Handle redirect
-    if ((r.statusCode === 301 || r.statusCode === 302) && r.headers.location) {
-      return tryOgScrape(pageUrl, HEADERS, url, res);
-    }
     let body = '';
     r.on('data', c => body += c);
     r.on('end', () => {
       try {
         const json = JSON.parse(body);
         if (json.title && json.title !== 'Spotify') {
-          console.log(`[spotify-track] oEmbed success: ${json.title}`);
-          // oEmbed title format: "Song Name" (artist is separate in provider)
-          // Try to get better search query by also getting artist from page
+          console.log(`[spotify-track] Stage 1 success: ${json.title}`);
           return res.json({ title: json.title, artist: '', searchQuery: json.title });
         }
       } catch (_) {}
-      tryOgScrape(pageUrl, HEADERS, url, res);
+      tryHighResilienceScrape(pageUrl, HEADERS, url, res);
     });
-  }).on('error', () => tryOgScrape(pageUrl, HEADERS, url, res));
+  }).on('error', () => tryHighResilienceScrape(pageUrl, HEADERS, url, res));
 });
 
-function tryOgScrape(pageUrl, headers, originalUrl, res) {
-  // Stage 2: Scrape og:title from Spotify track page
-  console.log(`[spotify-track] Scraping og:title from ${pageUrl}`);
+function tryHighResilienceScrape(pageUrl, headers, originalUrl, res) {
+  console.log(`[spotify-track] Stage 2 (Scrape) for ${pageUrl}`);
   https.get(pageUrl, { headers }, (r) => {
-    if ((r.statusCode === 301 || r.statusCode === 302) && r.headers.location) {
-      return trySlugFallback(originalUrl, res);
-    }
     let html = '';
-    r.on('data', c => { html += c; if (html.length > 50000) r.destroy(); });
+    r.on('data', c => { html += c; if (html.length > 100000) r.destroy(); });
     r.on('end', () => {
-      // og:title for Spotify tracks: "Song Name - song by Artist"
-      const ogMatch = html.match(/<meta\s+(?:property|name)="og:title"\s+content="([^"]+)"/i)
-        || html.match(/<meta\s+content="([^"]+)"\s+(?:property|name)="og:title"/i);
-
-      if (ogMatch && ogMatch[1]) {
-        let raw = ogMatch[1].replace(' | Spotify', '').replace(' on Spotify', '').trim();
-        // Format: "Song Name - song by Artist Name" → extract "Song Name Artist Name"
-        const byMatch = raw.match(/^(.+?)\s+-\s+(?:song|single|track)\s+by\s+(.+)$/i);
+      // Look for og:title first
+      const ogMatch = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i) 
+                   || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:title"/i);
+      
+      // Look for <title> tags fallback
+      const titleTagMatch = html.match(/<title>([^<]+)<\/title>/i);
+      
+      const rawTitle = (ogMatch && ogMatch[1]) || (titleTagMatch && titleTagMatch[1]) || '';
+      
+      if (rawTitle && rawTitle.toLowerCase() !== 'spotify') {
+        let clean = rawTitle.replace(' | Spotify', '').replace(' on Spotify', '').trim();
+        // Spotify title pattern: "Song Name - song by Artist Name" or "Song Name - Single by Artist Name"
+        const byMatch = clean.match(/^(.+?)\s+-\s+(?:song|single|track|album|playlist)\s+by\s+(.+)$/i);
         if (byMatch) {
           const title = byMatch[1].trim();
           const artist = byMatch[2].trim();
-          console.log(`[spotify-track] og:title success: ${title} - ${artist}`);
+          console.log(`[spotify-track] Stage 2 success: ${title} - ${artist}`);
           return res.json({ title, artist, searchQuery: `${title} ${artist}` });
         }
-        // Plain og:title without "song by"
-        console.log(`[spotify-track] og:title plain: ${raw}`);
-        return res.json({ title: raw, artist: '', searchQuery: raw });
+        console.log(`[spotify-track] Stage 2 partial success: ${clean}`);
+        return res.json({ title: clean, artist: '', searchQuery: clean });
       }
+      
       trySlugFallback(originalUrl, res);
     });
-    r.on('error', () => trySlugFallback(originalUrl, res));
   }).on('error', () => trySlugFallback(originalUrl, res));
 }
 
 function trySlugFallback(url, res) {
-  // Stage 3: Parse readable text from the URL itself as last resort
-  // e.g. spotify.com/track/abc → at least the ID so we can search
-  console.log(`[spotify-track] All stages failed for ${url}`);
-  res.status(404).send('Could not resolve Spotify track metadata');
+  // Try to extract some meaning from the URL slug if all else fails
+  const parts = url.split('/');
+  const last = parts[parts.length - 1].split('?')[0];
+  if (last && last.length > 10) {
+     console.log(`[spotify-track] Stage 3 fallback for ID: ${last}`);
+     return res.json({ title: 'Spotify Track', artist: '', searchQuery: last });
+  }
+  res.status(404).send('Could not resolve Spotify metadata');
 }
+
 
 
 // ─── Spotify Playlist → track list ────────────────────────────────────────

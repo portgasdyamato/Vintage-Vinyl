@@ -551,7 +551,7 @@ export default function Play({
     return null;
   };
 
-  // ── Helper: add Spotify track search queries to queue as YouTube URLs ──
+  // ── Helper: add Spotify track search queries to queue as stream tracks ──
   const addSpotifyTracksToQueue = async (tracks, labelPrefix = '') => {
     if (!tracks || tracks.length === 0) {
       showToast('No tracks found', 'error');
@@ -562,7 +562,7 @@ export default function Play({
     for (const trackQuery of tracks) {
       const videoId = await searchYouTube(trackQuery);
       if (videoId) {
-        const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
         setQueue((prevQueue) => {
           const alreadyExists = prevQueue.some(q => q.title === trackQuery);
           if (alreadyExists) return prevQueue;
@@ -571,9 +571,10 @@ export default function Play({
             setIsPlaying(true);
           }
           return [...prevQueue, {
-            url: ytUrl,
+            url: streamUrl,
             title: trackQuery,
-            isLocal: false, // plays via ReactPlayer/YouTube embed — reliable everywhere
+            isLocal: true, // native audio tag = background playback works
+            originalUrl: `https://www.youtube.com/watch?v=${videoId}`
           }];
         });
         addedCount++;
@@ -615,7 +616,7 @@ export default function Play({
       if (data && data.searchQuery) {
         const videoId = await searchYouTube(data.searchQuery);
         if (videoId) {
-          const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+          const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
           const finalTitle = data.title || data.searchQuery;
           setQueue((prevQueue) => {
             const alreadyExists = prevQueue.some(q => q.title === finalTitle);
@@ -625,9 +626,10 @@ export default function Play({
               setIsPlaying(true);
             }
             return [...prevQueue, {
-              url: ytUrl,
+              url: streamUrl,
               title: finalTitle,
-              isLocal: false, // ReactPlayer handles YouTube — reliable
+              isLocal: true, 
+              originalUrl: `https://www.youtube.com/watch?v=${videoId}`
             }];
           });
           showToast(`"${finalTitle}" added!`, 'success');
