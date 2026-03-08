@@ -74,11 +74,12 @@ app.get('/download', (req, res) => {
   });
 });
 
-// ─── Search YouTube (no API key — scrapes HTML) ───────────────────────────
+// ─── Search YouTube — HTML scrape first, yt-dlp fallback ─────────────────
 app.get('/search', (req, res) => {
   const query = req.query.q;
   if (!query) return res.status(400).send('No query provided');
 
+  // Stage 1: Fast HTML scrape
   const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}&sp=EgIQAQ%253D%253D`;
 
   https.get(searchUrl, {
@@ -92,16 +93,47 @@ app.get('/search', (req, res) => {
     response.on('end', () => {
       const match = data.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
       if (match && match[1]) {
-        res.json({ videoId: match[1] });
-      } else {
-        res.status(404).send('No results found');
+        console.log(`[search] Scrape hit for: ${query}`);
+        return res.json({ videoId: match[1] });
       }
+      // Stage 2: Fallback to yt-dlp ytsearch (always works)
+      console.log(`[search] Scrape miss, falling back to yt-dlp for: ${query}`);
+      ytdlpSearch(query, res);
     });
-  }).on('error', err => {
-    console.error('YouTube search error:', err);
-    res.status(500).send('Search failed');
+  }).on('error', () => {
+    console.log(`[search] Scrape error, falling back to yt-dlp for: ${query}`);
+    ytdlpSearch(query, res);
   });
 });
+
+function ytdlpSearch(query, res) {
+  const ytdlp = spawn('yt-dlp', [
+    `ytsearch1:${query}`,
+    '--print', '%(id)s',
+    '--no-playlist',
+    '--skip-download'
+  ]);
+
+  let output = '';
+  let errOutput = '';
+  ytdlp.stdout.on('data', d => output += d.toString());
+  ytdlp.stderr.on('data', d => errOutput += d.toString());
+
+  ytdlp.on('close', (code) => {
+    const videoId = output.trim().split('\n')[0].trim();
+    if (code === 0 && videoId && videoId.length === 11) {
+      console.log(`[search] yt-dlp found: ${videoId}`);
+      return res.json({ videoId });
+    }
+    console.error(`[search] yt-dlp failed: ${errOutput}`);
+    res.status(404).send('No results found');
+  });
+
+  ytdlp.on('error', (err) => {
+    console.error('[search] yt-dlp spawn error:', err);
+    res.status(500).send('Search failed');
+  });
+}
 
 // ─── Spotify Single Track → title via yt-dlp metadata ────────────────────
 // Resolves a spotify.com/track/... or spotify.link/... URL server-side,
