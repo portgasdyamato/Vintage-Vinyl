@@ -551,7 +551,7 @@ export default function Play({
     return null;
   };
 
-  // ── Helper: add a list of search-query strings from Spotify as stream tracks ──
+  // ── Helper: add Spotify track search queries to queue as YouTube URLs ──
   const addSpotifyTracksToQueue = async (tracks, labelPrefix = '') => {
     if (!tracks || tracks.length === 0) {
       showToast('No tracks found', 'error');
@@ -562,22 +562,24 @@ export default function Play({
     for (const trackQuery of tracks) {
       const videoId = await searchYouTube(trackQuery);
       if (videoId) {
-        const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+        const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
         setQueue((prevQueue) => {
           const alreadyExists = prevQueue.some(q => q.title === trackQuery);
           if (alreadyExists) return prevQueue;
-          if (prevQueue.length === 0) setIsPlaying(true);
+          if (prevQueue.length === 0) {
+            setCurrentVideoIndex(0);
+            setIsPlaying(true);
+          }
           return [...prevQueue, {
-            url: streamUrl,
+            url: ytUrl,
             title: trackQuery,
-            isLocal: true, // routes through <audio> tag → true background playback
-            originalUrl: `https://www.youtube.com/watch?v=${videoId}`
+            isLocal: false, // plays via ReactPlayer/YouTube embed — reliable everywhere
           }];
         });
         addedCount++;
       }
     }
-    showToast(`${labelPrefix}Synced ${addedCount} track${addedCount !== 1 ? 's' : ''} for background play!`, 'success');
+    showToast(`${labelPrefix}Synced ${addedCount} track${addedCount !== 1 ? 's' : ''}!`, 'success');
   };
 
   const handleSpotifyLink = async (rawUrl) => {
@@ -613,20 +615,22 @@ export default function Play({
       if (data && data.searchQuery) {
         const videoId = await searchYouTube(data.searchQuery);
         if (videoId) {
-          const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+          const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
           const finalTitle = data.title || data.searchQuery;
           setQueue((prevQueue) => {
             const alreadyExists = prevQueue.some(q => q.title === finalTitle);
             if (alreadyExists) return prevQueue;
-            if (prevQueue.length === 0) setIsPlaying(true);
+            if (prevQueue.length === 0) {
+              setCurrentVideoIndex(0);
+              setIsPlaying(true);
+            }
             return [...prevQueue, {
-              url: streamUrl,
+              url: ytUrl,
               title: finalTitle,
-              isLocal: true, // native audio tag = background playback works
-              originalUrl: `https://www.youtube.com/watch?v=${videoId}`
+              isLocal: false, // ReactPlayer handles YouTube — reliable
             }];
           });
-          showToast(`"${finalTitle}" synced for background play!`, 'success');
+          showToast(`"${finalTitle}" added!`, 'success');
         } else {
           showToast('No YouTube match found for this song', 'error');
         }

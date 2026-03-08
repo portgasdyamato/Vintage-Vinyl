@@ -135,54 +135,89 @@ function ytdlpSearch(query, res) {
   });
 }
 
-// ─── Spotify Single Track → title via yt-dlp metadata ────────────────────
-// Resolves a spotify.com/track/... or spotify.link/... URL server-side,
-// completely bypassing CORS since it runs on the server.
+// ─── Spotify Single Track resolver ────────────────────────────────────────
+// 3-stage chain: oEmbed → og:title scrape → URL slug fallback
 app.get('/spotify-track', (req, res) => {
   const url = req.query.url;
   if (!url) return res.status(400).send('No URL provided');
 
-  // yt-dlp can read Spotify track metadata without downloading
-  const ytdlp = spawn('yt-dlp', [
-    '--print', '%(title)s|||%(uploader)s',
-    '--no-playlist',
-    '--no-download',
-    '--cookies', 'cookies.txt',
-    url
-  ]);
+  // Extract track ID for direct page URL
+  const trackIdMatch = url.match(/track\/([a-zA-Z0-9]+)/);
+  const pageUrl = trackIdMatch
+    ? `https://open.spotify.com/track/${trackIdMatch[1]}`
+    : url;
 
-  let output = '';
-  let errOutput = '';
-  ytdlp.stdout.on('data', d => output += d.toString());
-  ytdlp.stderr.on('data', d => errOutput += d.toString());
+  const HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+  };
 
-  ytdlp.on('close', (code) => {
-    const trimmed = output.trim();
-    if (code === 0 && trimmed) {
-      const parts = trimmed.split('|||');
-      const title = parts[0] ? parts[0].trim() : '';
-      const artist = parts[1] ? parts[1].trim() : '';
-      const searchQuery = artist ? `${title} ${artist}` : title;
-      return res.json({ title, artist, searchQuery });
+  // Stage 1: oEmbed (fastest)
+  const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(pageUrl)}`;
+  https.get(oembedUrl, { headers: HEADERS }, (r) => {
+    // Handle redirect
+    if ((r.statusCode === 301 || r.statusCode === 302) && r.headers.location) {
+      return tryOgScrape(pageUrl, HEADERS, url, res);
     }
-
-    // Fallback: try Spotify oEmbed via server-side HTTP
-    const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`;
-    https.get(oembedUrl, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Pippofy/1.0)' }
-    }, (r) => {
-      let body = '';
-      r.on('data', c => body += c);
-      r.on('end', () => {
-        try {
-          const json = JSON.parse(body);
-          if (json.title) return res.json({ title: json.title, artist: '', searchQuery: json.title });
-        } catch (_) {}
-        res.status(404).send('Could not resolve Spotify track');
-      });
-    }).on('error', () => res.status(500).send('Spotify track resolution failed'));
-  });
+    let body = '';
+    r.on('data', c => body += c);
+    r.on('end', () => {
+      try {
+        const json = JSON.parse(body);
+        if (json.title && json.title !== 'Spotify') {
+          console.log(`[spotify-track] oEmbed success: ${json.title}`);
+          // oEmbed title format: "Song Name" (artist is separate in provider)
+          // Try to get better search query by also getting artist from page
+          return res.json({ title: json.title, artist: '', searchQuery: json.title });
+        }
+      } catch (_) {}
+      tryOgScrape(pageUrl, HEADERS, url, res);
+    });
+  }).on('error', () => tryOgScrape(pageUrl, HEADERS, url, res));
 });
+
+function tryOgScrape(pageUrl, headers, originalUrl, res) {
+  // Stage 2: Scrape og:title from Spotify track page
+  console.log(`[spotify-track] Scraping og:title from ${pageUrl}`);
+  https.get(pageUrl, { headers }, (r) => {
+    if ((r.statusCode === 301 || r.statusCode === 302) && r.headers.location) {
+      return trySlugFallback(originalUrl, res);
+    }
+    let html = '';
+    r.on('data', c => { html += c; if (html.length > 50000) r.destroy(); });
+    r.on('end', () => {
+      // og:title for Spotify tracks: "Song Name - song by Artist"
+      const ogMatch = html.match(/<meta\s+(?:property|name)="og:title"\s+content="([^"]+)"/i)
+        || html.match(/<meta\s+content="([^"]+)"\s+(?:property|name)="og:title"/i);
+
+      if (ogMatch && ogMatch[1]) {
+        let raw = ogMatch[1].replace(' | Spotify', '').replace(' on Spotify', '').trim();
+        // Format: "Song Name - song by Artist Name" → extract "Song Name Artist Name"
+        const byMatch = raw.match(/^(.+?)\s+-\s+(?:song|single|track)\s+by\s+(.+)$/i);
+        if (byMatch) {
+          const title = byMatch[1].trim();
+          const artist = byMatch[2].trim();
+          console.log(`[spotify-track] og:title success: ${title} - ${artist}`);
+          return res.json({ title, artist, searchQuery: `${title} ${artist}` });
+        }
+        // Plain og:title without "song by"
+        console.log(`[spotify-track] og:title plain: ${raw}`);
+        return res.json({ title: raw, artist: '', searchQuery: raw });
+      }
+      trySlugFallback(originalUrl, res);
+    });
+    r.on('error', () => trySlugFallback(originalUrl, res));
+  }).on('error', () => trySlugFallback(originalUrl, res));
+}
+
+function trySlugFallback(url, res) {
+  // Stage 3: Parse readable text from the URL itself as last resort
+  // e.g. spotify.com/track/abc → at least the ID so we can search
+  console.log(`[spotify-track] All stages failed for ${url}`);
+  res.status(404).send('Could not resolve Spotify track metadata');
+}
+
 
 // ─── Spotify Playlist → track list ────────────────────────────────────────
 // Strategy: use yt-dlp flat extraction (most reliable), fall back to embed scrape
