@@ -279,3 +279,5 @@ export default function App() {
         </div>
     );
 }
+/ /   t r i g g e r   v e r c e l   0 3 / 0 8 / 2 0 2 6   1 8 : 0 4 : 1 6  
+ 
