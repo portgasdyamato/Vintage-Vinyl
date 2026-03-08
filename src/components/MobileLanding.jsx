@@ -5,6 +5,8 @@ import pippofyLogo from '../assets/pippofy.png';
 export default function MobileLanding() {
   const features = [
     { title: "Vinyl Experience", desc: "Tactile tonearm and disk scratching on your phone.", icon: "💿" },
+    { title: "Spotify & YouTube", desc: "Paste any Spotify track, playlist or album link to sync.", icon: "🎵" },
+    { title: "Background Play", desc: "Music keeps playing even when you switch apps.", icon: "🔊" },
     { title: "Atmosphere", desc: "Layer rain or forest sounds over any music.", icon: "🌊" },
     { title: "Smart Resume", desc: "Never lose your spot in YouTube videos again.", icon: "🕒" },
     { title: "Native High-Fi", desc: "Play your local high-quality audio files.", icon: "📱" }
@@ -12,8 +14,8 @@ export default function MobileLanding() {
 
   const handleDownload = () => {
     const link = document.createElement('a');
-    link.href = '/Pippofy_Final_v107.apk';
-    link.download = 'Pippofy Music Player.apk';
+    link.href = '/Pippofy_latest.apk';
+    link.download = 'Pippofy_latest.apk';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -57,16 +59,34 @@ export default function MobileLanding() {
         </motion.p>
 
         {/* CTA Button */}
-        <motion.button
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8 }}
-          onClick={handleDownload}
-          className="w-full max-w-xs bg-gradient-to-b from-[#f3e1cc] to-[#b88c5a] text-black font-extrabold py-5 rounded-[22px] shadow-[0_20px_50px_rgba(184,140,90,0.4)] mb-4 active:scale-95 transition-transform px-4 text-center"
+          className="w-full max-w-xs mb-6"
         >
-          Download or Update Pippofy Latest Version
-        </motion.button>
-        <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-16 font-bold">Available for Android</p>
+          <button
+            onClick={handleDownload}
+            className="w-full bg-gradient-to-b from-[#f3e1cc] to-[#b88c5a] text-black font-extrabold py-5 rounded-[22px] shadow-[0_20px_50px_rgba(184,140,90,0.4)] active:scale-95 transition-transform px-4 flex items-center justify-center gap-3"
+          >
+            {/* Download Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span className="text-[15px]">Download Latest APK</span>
+          </button>
+
+          {/* Sub-label row */}
+          <div className="flex items-center justify-center gap-3 mt-3">
+            <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Android</span>
+            <span className="w-1 h-1 rounded-full bg-white/20"/>
+            <span className="text-[10px] text-[#b88c5a]/70 uppercase tracking-[0.2em] font-bold">Always Latest</span>
+            <span className="w-1 h-1 rounded-full bg-white/20"/>
+            <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Free</span>
+          </div>
+        </motion.div>
 
         {/* Features List */}
         <div className="w-full space-y-4">
