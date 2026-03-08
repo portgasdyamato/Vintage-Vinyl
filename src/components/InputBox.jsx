@@ -11,7 +11,7 @@ export default function InputBox({ newVideoLink, setNewVideoLink, onAdd }) {
     <div className="w-full">
       <input
         type="text"
-        placeholder="Drop a YouTube video or playlist link here..."
+        placeholder="YouTube, Spotify track / playlist / album link..."
         value={newVideoLink}
         onChange={(e) => setNewVideoLink(e.target.value)}
         onKeyDown={handleKeyPress}

@@ -551,75 +551,91 @@ export default function Play({
     return null;
   };
 
+  // ── Helper: add a list of search-query strings from Spotify as stream tracks ──
+  const addSpotifyTracksToQueue = async (tracks, labelPrefix = '') => {
+    if (!tracks || tracks.length === 0) {
+      showToast('No tracks found', 'error');
+      return;
+    }
+    showToast(`Found ${tracks.length} tracks. Syncing...`, 'info');
+    let addedCount = 0;
+    for (const trackQuery of tracks) {
+      const videoId = await searchYouTube(trackQuery);
+      if (videoId) {
+        const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+        setQueue((prevQueue) => {
+          const alreadyExists = prevQueue.some(q => q.title === trackQuery);
+          if (alreadyExists) return prevQueue;
+          if (prevQueue.length === 0) setIsPlaying(true);
+          return [...prevQueue, {
+            url: streamUrl,
+            title: trackQuery,
+            isLocal: true, // routes through <audio> tag → true background playback
+            originalUrl: `https://www.youtube.com/watch?v=${videoId}`
+          }];
+        });
+        addedCount++;
+      }
+    }
+    showToast(`${labelPrefix}Synced ${addedCount} track${addedCount !== 1 ? 's' : ''} for background play!`, 'success');
+  };
+
   const handleSpotifyLink = async (rawUrl) => {
     const url = rawUrl.trim();
     try {
+      // ── Spotify Playlist ────────────────────────────────────────────────
       if (url.includes('/playlist/')) {
         showToast('Scanning Spotify Playlist...', 'info');
         const response = await fetch(`${BACKEND_URL}/spotify-playlist?url=${encodeURIComponent(url)}`);
-        if (!response.ok) throw new Error('Spotify playlist scan failed');
+        if (!response.ok) throw new Error(`Playlist scan failed: ${response.status}`);
         const { tracks } = await response.json();
-        
-        if (tracks && tracks.length > 0) {
-          showToast(`Found ${tracks.length} tracks. Syncing...`, 'info');
-          let addedCount = 0;
-          for (const trackName of tracks) {
-            const videoId = await searchYouTube(trackName);
-            if (videoId) {
-              const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
-              setQueue((prevQueue) => {
-                const trackTitle = trackName;
-                const alreadyExists = prevQueue.some(q => q.title === trackTitle);
-                if (alreadyExists) return prevQueue;
-                if (prevQueue.length === 0) setIsPlaying(true);
-                return [...prevQueue, { 
-                  url: streamUrl, 
-                  title: trackTitle,
-                  isLocal: true,
-                  originalUrl: `https://www.youtube.com/watch?v=${videoId}`
-                }];
-              });
-              addedCount++;
-            }
-          }
-          showToast(`Successfully synced ${addedCount} tracks!`, 'success');
-        } else {
-          showToast('No tracks found in playlist', 'error');
-        }
+        await addSpotifyTracksToQueue(tracks, 'Playlist ');
         return;
       }
 
-      // Single track logic
-      const response = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(url)}`);
-      if (!response.ok) throw new Error('Spotify metadata fetch failed');
+      // ── Spotify Album ───────────────────────────────────────────────────
+      if (url.includes('/album/')) {
+        showToast('Scanning Spotify Album...', 'info');
+        const response = await fetch(`${BACKEND_URL}/spotify-album?url=${encodeURIComponent(url)}`);
+        if (!response.ok) throw new Error(`Album scan failed: ${response.status}`);
+        const { tracks } = await response.json();
+        await addSpotifyTracksToQueue(tracks, 'Album ');
+        return;
+      }
+
+      // ── Single Spotify Track ────────────────────────────────────────────
+      // Always go through backend to avoid CORS on mobile/Android
+      showToast('Identifying Spotify track...', 'info');
+      const response = await fetch(`${BACKEND_URL}/spotify-track?url=${encodeURIComponent(url)}`);
+      if (!response.ok) throw new Error(`Track resolution failed: ${response.status}`);
       const data = await response.json();
-      
-      if (data && data.title) {
-        showToast(`Identifying: ${data.title}`, 'info');
-        const videoId = await searchYouTube(data.title);
-        
+
+      if (data && data.searchQuery) {
+        const videoId = await searchYouTube(data.searchQuery);
         if (videoId) {
           const streamUrl = `${BACKEND_URL}/download?url=${encodeURIComponent(`https://www.youtube.com/watch?v=${videoId}`)}`;
+          const finalTitle = data.title || data.searchQuery;
           setQueue((prevQueue) => {
-            const finalTitle = data.title;
             const alreadyExists = prevQueue.some(q => q.title === finalTitle);
             if (alreadyExists) return prevQueue;
             if (prevQueue.length === 0) setIsPlaying(true);
-            return [...prevQueue, { 
-              url: streamUrl, 
+            return [...prevQueue, {
+              url: streamUrl,
               title: finalTitle,
-              isLocal: true,
+              isLocal: true, // native audio tag = background playback works
               originalUrl: `https://www.youtube.com/watch?v=${videoId}`
             }];
           });
-          showToast('Spotify song synced for background play!', 'success');
+          showToast(`"${finalTitle}" synced for background play!`, 'success');
         } else {
-          showToast('No match found for this song', 'error');
+          showToast('No YouTube match found for this song', 'error');
         }
+      } else {
+        showToast('Could not identify Spotify track', 'error');
       }
     } catch (error) {
       console.error('Spotify error:', error);
-      showToast('Could not resolve Spotify link', 'error');
+      showToast(`Spotify error: ${error.message}`, 'error');
     }
   };
 
